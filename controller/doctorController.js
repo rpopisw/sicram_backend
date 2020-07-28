@@ -22,17 +22,18 @@ var pup= require('../tools/scrapers');
                   res.status(401).json({msg: 'email ya esta siendo usado'});
                }else{
                   //varaiable que contiene los datos del cmp encontrado
-                  //const datosCMP = await  pup.scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id='+req.body.cmp);
+                  const datosCMP = await  pup.scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id='+req.body.cmp);
                   var especialidad = await Especialidad.findOne({especialidad: req.body.especialidad});
 
                   
                     console.log('encontro datos CMP');
-                    c//onsole.log('ESTO ES LO QUE COGIO MI CAUSA'+datosCMP.nombres)
+                    console.log('ESTO ES LO QUE COGIO MI CAUSA'+datosCMP.nombres)
 
                     console.log(especialidad);
                    
                     //si los nombres del doctor y cmp coinciden
-                   //creamos el nuevo docotor y guaardamos sus datos
+                    if((req.body.name.toLowerCase()==datosCMP.nombres.toLowerCase()&&(req.body.lastname.toLowerCase()==datosCMP.apellidos.toLowerCase()))){
+                    //creamos el nuevo docotor y guaardamos sus datos
                     var newDoctor = new Doctor({
                       username: req.body.username,
                       password: req.body.password,
@@ -60,7 +61,9 @@ var pup= require('../tools/scrapers');
                       //guardamos especialidad
                       especialidad.doctor.push(newDoctor);
                       await especialidad.save();
-                   
+                    }else{
+                      res.json({msg: 'LLene los nombres y apellidos, completos y CORRECTOS del doctor'});
+                    }
                   
                  
                }
