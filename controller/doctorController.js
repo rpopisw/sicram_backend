@@ -68,9 +68,7 @@ var pup= require('../tools/scrapers');
                  
                }
              }catch(e){
-              return res.status(400).json({
-                msg: e,
-              })
+              console.log("ERR  "+e);
             }
             
            });
