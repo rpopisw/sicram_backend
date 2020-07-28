@@ -68,7 +68,9 @@ var pup= require('../tools/scrapers');
                  
                }
              }catch(e){
-              console.log("ERR  "+e);
+              return res.status(400).json({
+                msg: 'CMP INCORRECTO',
+              })
             }
             
            });
