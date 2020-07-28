@@ -22,7 +22,7 @@ router.get('/nota/:id', async(req, res) => {
     const _id = req.params.id;
     try {
       const notaDB = await _id; 
-      const respuesta = await  pup.scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id='+notaDB);//scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id=00'+notaDB);
+      const respuesta = await  pup.scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id='+notaDB);
       
       res.json(respuesta);
     } catch (error) {
