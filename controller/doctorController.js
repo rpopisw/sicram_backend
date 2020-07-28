@@ -69,7 +69,7 @@ var pup= require('../tools/scrapers');
                }
              }catch(e){
               return res.status(400).json({
-                msg: 'CMP INCOsRRECTO',
+                msg: e,
               })
             }
             
