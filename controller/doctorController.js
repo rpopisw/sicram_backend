@@ -27,43 +27,7 @@ var pup= require('../tools/scrapers');
 
                   
                     console.log('encontro datos CMP');
-                    console.log('ESTO ES LO QUE COGIO MI CAUSA'+datosCMP.nombres)
-
-                    console.log(especialidad);
-                   
-                    //si los nombres del doctor y cmp coinciden
-                    if((req.body.name.toLowerCase()==datosCMP.nombres.toLowerCase()&&(req.body.lastname.toLowerCase()==datosCMP.apellidos.toLowerCase()))){
-                    //creamos el nuevo docotor y guaardamos sus datos
-                    var newDoctor = new Doctor({
-                      username: req.body.username,
-                      password: req.body.password,
-                      email: req.body.email,
-                      name: req.body.name,
-                      lastname: req.body.lastname,
-                      dni: req.body.dni,
-                      edad: req.body.edad,
-                      celular: req.body.celular,
-                      cmp: req.body.cmp,
-                      profesion: req.body.profesion,
-                    })
-                    //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
-                    newDoctor.especialidad=especialidad;
-                    // guardamos doctor registrado
-                      await newDoctor.save(function(err) {
-                        //error al guardar al doctor
-                        if (err) {
-                          return res.json({success: false, msg: 'Username ya existe'});
-                        }
-                        //si todo estuvo bien respondemos Json
-                        res.json({success: true, msg: 'Bienvenido Doctor, es un nuevo usario.'});
-                      });
-                      console.log('--' +newDoctor); 
-                      //guardamos especialidad
-                      especialidad.doctor.push(newDoctor);
-                      await especialidad.save();
-                    }else{
-                      res.json({msg: 'LLene los nombres y apellidos, completos y CORRECTOS del doctor'});
-                    }
+                    res.status(401).json(datosCMP);
                   
                  
                }
