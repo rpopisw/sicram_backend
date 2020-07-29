@@ -34,7 +34,7 @@ router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: fal
 router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
 //elimar citas
 router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
-//actulizar citas
+//actualizar citas
 router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
 
 

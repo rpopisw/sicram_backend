@@ -1,5 +1,6 @@
 var User = require('../models/user');
 var Dependiente= require('../models/dependiente');
+var Doctor = require('../models/doctor');
 
 exports.Agregar_Dependiente = async function(req,res){
     try{
@@ -97,7 +98,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                         var paciente = await User.findById(req.params.id);   //deberia ser metido por parametro
                         console.log(paciente.username);
                         //econtrando al doctor por parametro
-                        var doctor = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
+                        var doctor = await Doctor.findById(req.body._iddoctor);
                         console.log(doctor.username);
                         //encontrando especialidad
                         var especialidad = await Especialidad.findOne({especialidad: req.body.especialidad});
