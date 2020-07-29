@@ -32,6 +32,12 @@ router.post('/user/perfil/update/:id',passport.authenticate('user', { session: f
 router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: false}),citaController.GenerarNuevaCita);
 //listar citas del usuario
 router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
+//
+router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
+//
+router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
+
+
 
 //ENDPOINT PARA DEPENDIENTE-------------------------------
 //agregar nuevo dependite

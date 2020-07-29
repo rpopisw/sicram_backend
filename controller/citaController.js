@@ -103,7 +103,7 @@ exports.Obtener_Citas_Paciente = async function(req,res){
         console.log('ERROR  '+err);
     }
 }
-/*
+
 exports.Actualizar_Citas = async function(req,res){
     try{
         var token = getToken(req.headers);
@@ -138,10 +138,10 @@ exports.Actualizar_Citas = async function(req,res){
             //creando nueva cita
             var nuevacita = new Cita();
             //encontrando al usuario por parametro
-            var paciente = await User.findById(req.user._id);   //deberia ser metido por parametro
+            var paciente2 = await User.findById(req.user._id);   //deberia ser metido por parametro
             console.log(paciente.username);
             //econtrando al doctor por parametro
-            var doctor = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
+            var doctor2 = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
             console.log(doctor.username);
             //encontrando especialidad
             var especialidad = await Especialidad.findOne({especialidad: req.body.especialidad});
@@ -150,12 +150,12 @@ exports.Actualizar_Citas = async function(req,res){
                 console.log(especialidad._id + '  COMPARA  ' + doctor.especialidad)
                 //si especialidad es la del doctor
                 if(doctor.especialidad.equals(especialidad._id)){
-                    var horario = await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor});
+                    var horario = await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor2});
                     //si horario es true
                     if(horario){console.log('HORARIO: ' +horario);
                         //agregando el doctor y el usuario a la nueva cita
-                        nuevacita.user=paciente;
-                        nuevacita.doctor=doctor;
+                        nuevacita.user=paciente2;
+                        nuevacita.doctor=doctor2;
                         nuevacita.especialidad = especialidad;
                         nuevacita.horario = horario;
                         //guardamos nueva cita con su doctor y su usuario respectivo
@@ -166,13 +166,13 @@ exports.Actualizar_Citas = async function(req,res){
                             res.json({success: true, msg: 'Exito nueva cita creada.'});
                         });
                         //agregamos la cita para el usuario.
-                        paciente.cita.push(nuevacita);
+                        paciente2.cita.push(nuevacita);
                         //agregamos la cita para el doctor
-                        doctor.cita.push(nuevacita);
+                        doctor2.cita.push(nuevacita);
                         //guardamos al user con su cita
-                        await paciente.save();
+                        await paciente2.save();
                         //guardamos al doctor con su cita
-                        await doctor.save();
+                        await doctor2.save();
                         //guardamos la cita en el horario
                         horario.cita = nuevacita;
                         //guardamos al horario con su cita
@@ -251,7 +251,7 @@ exports.Eliminar_cita = async function(req,res){
    }catch(err){
        console.log('ERROR  '+err);
    }
-}*/
+}
 
   //metodo para confirmar que entro un token 
   getToken = function (headers) {
