@@ -142,6 +142,8 @@ var pup= require('../tools/scrapers');
     try{
       var token = getToken(req.headers);
       if (token) {
+
+        if(req.user.id==req.params.id){
       await Doctor.findById(req.user.id,async (err,doctor)=>{
         if(err){ console.log('usuario no encontrado aqui el error: '+ err);
         }else {
@@ -157,6 +159,11 @@ var pup= require('../tools/scrapers');
           });
         }
       });
+    }else{
+      res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)
+     }
+
+
       }else{
         return res.status(403).send({success: false, msg: 'Unauthorized.'});
       }
@@ -171,6 +178,8 @@ var pup= require('../tools/scrapers');
    try{
       var token = getToken(req.headers);
       if (token) {
+
+        if(req.user.id==req.params.id){
           var doctor = await Doctor.findById(req.user.id)
             console.log(doctor);
               var horarioEncontrado= await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor});
@@ -201,7 +210,9 @@ var pup= require('../tools/scrapers');
                   //guardamos dooctor actualizado
                   await doctor.save();
                   }
-
+                }else{
+                  res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)
+                 }
                  
       }else{
         return res.status(403).send({success: false, msg: 'Unauthorized.'});
