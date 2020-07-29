@@ -32,9 +32,9 @@ router.post('/user/perfil/update/:id',passport.authenticate('user', { session: f
 router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: false}),citaController.GenerarNuevaCita);
 //listar citas del usuario
 router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
-//
+//elimar citas
 router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
-//
+//actualizar citas
 router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
 
 
@@ -45,7 +45,7 @@ router.post('/user/dependiente/agregar/:id',passport.authenticate('user', { sess
 //listar dependientes
 router.get('/user/dependiente/listar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Obtener_Dependientes);
 //ENDPOINT PARA CITA DE DEPENDIENTE
-
+router.post('/user/dependiente/cita/crear/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Agregar_Cita_Dependiente);
 
 
 

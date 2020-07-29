@@ -102,7 +102,7 @@ var pup= require('../tools/scrapers');
                 expiresIn: 604800 // 1 week
               });
               // retornamos la informacion incluyendo el token como json
-              res.json({success: true, token: 'Bearer ' + token});
+              res.json({success: true,id:doctor._id, token: 'Bearer ' + token});
             } else {
               res.status(401).send({success: false, msg: 'LA AUTENTICACION FALLO PASSWORD INCORRECTO '});
             }

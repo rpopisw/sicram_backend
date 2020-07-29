@@ -1,6 +1,9 @@
 var User = require('../models/user');
 var Dependiente= require('../models/dependiente');
-
+var Doctor = require('../models/doctor');
+var Cita = require('../models/cita');
+var Horario = require('../models/horario');
+var Especialidad = require('../models/especialidad');
 exports.Agregar_Dependiente = async function(req,res){
     try{
         var token = getToken(req.headers);
@@ -86,7 +89,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
  
             if(req.user.id==req.params.id){
                     
-                await Dependiente.findOne({user:req.user.id},async (err,dependientes)=>{
+                await Dependiente.findOne({user:req.user.id},async (err,dependiente)=>{
                     if(err){
                         res.json({msg:'no encontro las dependientes'})
                     }else{
@@ -97,7 +100,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                         var paciente = await User.findById(req.params.id);   //deberia ser metido por parametro
                         console.log(paciente.username);
                         //econtrando al doctor por parametro
-                        var doctor = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
+                        var doctor = await Doctor.findById(req.body._iddoctor);
                         console.log(doctor.username);
                         //encontrando especialidad
                         var especialidad = await Especialidad.findOne({especialidad: req.body.especialidad});
@@ -108,7 +111,13 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                             if(doctor.especialidad.equals(especialidad._id)){
                                 var horario = await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor});
                                 //si horario es true
-                                if(horario){console.log('HORARIO: ' +horario);
+                                if(horario){
+                                    
+                                    if(horario.cita){
+                                        console.log('');
+                                        res.json({msg: 'HORARIO YA ESTA USADO ',cita:horario.cita});
+                                    }else{
+                                        console.log('HORARIO: ' +horario);
                                     //agregando el doctor y el usuario a la nueva cita
                                     nuevacita.user=paciente;
                                     nuevacita.doctor=doctor;
@@ -137,6 +146,8 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                                     await horario.save();
                                 
                                 // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                                    }
+                                    
                                 }else{
                                     console.log('HORARIO NO COINCIDE ');
                                     res.json({msg: 'HORARIO NO COINCIDE'});
