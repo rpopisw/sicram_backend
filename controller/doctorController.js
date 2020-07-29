@@ -6,6 +6,7 @@ var Doctor = require("../models/doctor");
 var Especialidad =  require('../models/especialidad');
 var Horario = require('../models/horario');
 var pup= require('../tools/scrapers');
+var Cita = require('../models/cita');
 
   //registor doctor
   exports.SignupDoctor = async function(req, res) {
@@ -138,19 +139,17 @@ var pup= require('../tools/scrapers');
 
   }
   //
-
   exports.Obtener_horario_doctor = async function (req,res) {
     try{
       
             var doctor = await Doctor.findById(req.params.id).populate('horario');
-            res.json(doctor);
+            res.json(doctor.horario);
           
     }catch(error){
-        console.log('ERRORCITO  '+error);
+            res.json({msg: 'id incorrecto, no se encontro doctor'})
     }
 
   }
-
   //actualizar datos del doctor
   exports.Actualizar_datos_doctor =  async function (req,res) {
     try{
@@ -186,7 +185,6 @@ var pup= require('../tools/scrapers');
     }
   
   }
-
   //agregar stack de horarios
   exports.Agregar_horario_doctor = async function(req,res){
    try{
@@ -233,6 +231,42 @@ var pup= require('../tools/scrapers');
     }catch(err){
       console.error('ERRRRORRRRRRR--------------------------------' + err)
       throw err
+    }
+  }
+  //cambiar esado de citas de pendientes a : atendido o a no atendido
+  exports.Cambiar_estado_citas = async function(req,res){
+    try{
+      var token = getToken(req.headers);
+      if (token) {
+        if(req.user.id==req.params.id){
+
+          await Cita.findOne({doctor:req.params.id},(err,cita)=>{
+            if(err){
+              res.json({msg: 'no se encontro la cita'});
+            }else{
+              //cambiamos el estado de la cita
+              cita.estado = req.body.estado;
+              //guardamos los cambios de la cita
+              cita.save((erro,cita)=>{
+                if(erro){
+                  res.json({msg: 'no se pudo guardar el estado'});
+                }else{
+                  res.json({msg: 'estado guardado', estado:cita.estado});
+                }
+              });
+            }
+          })
+
+
+        }else{
+          res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)
+        }
+      }else{
+       return res.status(403).send({success: false, msg: 'Unauthorized.'});
+      }
+    }catch(err){
+     console.error('ERRRRORRRRRRR--------------------------------' + err)
+    throw err
     }
   }
   

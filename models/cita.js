@@ -11,6 +11,10 @@ var CitaSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Horario',
     },
+    estado:{
+        type: String,
+        default: 'pendiente'
+    },
     doctor:{
         type: Schema.Types.ObjectId,
         ref: 'Doctor' 
