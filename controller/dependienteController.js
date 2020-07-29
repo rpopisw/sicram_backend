@@ -86,7 +86,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
  
             if(req.user.id==req.params.id){
                     
-                await Dependiente.findOne({user:req.user.id},async (err,dependientes)=>{
+                await Dependiente.findOne({user:req.user.id},async (err,dependiente)=>{
                     if(err){
                         res.json({msg:'no encontro las dependientes'})
                     }else{
