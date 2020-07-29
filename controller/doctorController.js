@@ -240,7 +240,7 @@ var Cita = require('../models/cita');
       if (token) {
         if(req.user.id==req.params.id){
 
-          await Cita.findOne({doctor:req.params.id},(err,cita)=>{
+          await Cita.findOne({_id:req.body.id_cita},(err,cita)=>{
             if(err){
               res.json({msg: 'no se encontro la cita'});
             }else{
