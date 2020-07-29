@@ -178,7 +178,6 @@ var pup= require('../tools/scrapers');
    try{
       var token = getToken(req.headers);
       if (token) {
-
         if(req.user.id==req.params.id){
           var doctor = await Doctor.findById(req.user.id)
             console.log(doctor);
