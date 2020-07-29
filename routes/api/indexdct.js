@@ -18,11 +18,11 @@ router.get('/signoutdoctor', passport.authenticate('doctor', { session: false}),
 //mostrar datos del perfil del doctor
 router.get('/doctor/perfil/:id', passport.authenticate('doctor', { session: false}), doctorController.Obtener_datos_doctor);
 //actualizar datos del doctor logeado
-router.post('/doctor/perfil/update/:id',passport.authenticate('doctor', { session: false}),doctorController.Actualizar_datos_doctor)
+router.post('/doctor/perfil/update',passport.authenticate('doctor', { session: false}),doctorController.Actualizar_datos_doctor)
 
 
 //HORARIOS DEL DOCTOR
-router.post('/doctor/horario/agregar/:id',passport.authenticate('doctor', { session: false}),doctorController.Agregar_horario_doctor)
+router.post('/doctor/horario/agregar',passport.authenticate('doctor', { session: false}),doctorController.Agregar_horario_doctor)
 
 
 module.exports = router;

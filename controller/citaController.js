@@ -103,6 +103,7 @@ exports.Obtener_Citas_Paciente = async function(req,res){
         console.log('ERROR  '+err);
     }
 }
+/*
 exports.Actualizar_Citas = async function(req,res){
     try{
         var token = getToken(req.headers);
@@ -178,8 +179,7 @@ exports.Actualizar_Citas = async function(req,res){
                         await horario.save();
                     
 
-
-                     res.json({msg: 'cita eliminada'});
+                        
                     // res.send(nuevacita);  me sale error de cabecera si hago res.send
                     }else{
                         console.log('HORARIO NO COINCIDE ');
@@ -251,7 +251,7 @@ exports.Eliminar_cita = async function(req,res){
    }catch(err){
        console.log('ERROR  '+err);
    }
-}
+}*/
 
   //metodo para confirmar que entro un token 
   getToken = function (headers) {

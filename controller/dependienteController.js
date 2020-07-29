@@ -78,7 +78,7 @@ exports.Obtener_Dependientes = async function(req,res){
         console.log('ERROR  '+err);
     }
 }
-
+/*
 exports.Agregar_Cita_Dependiente = function(req,res){
     try{
         var token = getToken(req.headers);
@@ -158,4 +158,4 @@ exports.Agregar_Cita_Dependiente = function(req,res){
     }catch(err){
         console.log('ERROR  '+err);
     }
-}
+}*/
