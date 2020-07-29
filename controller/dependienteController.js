@@ -1,7 +1,9 @@
 var User = require('../models/user');
 var Dependiente= require('../models/dependiente');
 var Doctor = require('../models/doctor');
-
+var Cita = require('../models/cita');
+var Horario = require('../models/horario');
+var Especialidad = require('../models/especialidad');
 exports.Agregar_Dependiente = async function(req,res){
     try{
         var token = getToken(req.headers);
