@@ -137,6 +137,20 @@ var pup= require('../tools/scrapers');
     }
 
   }
+  //
+
+  exports.Obtener_horario_doctor = async function (req,res) {
+    try{
+      
+            var doctor = await Doctor.findById(req.params.id).populate('horario');
+            res.json(doctor);
+          
+    }catch(error){
+        console.log('ERRORCITO  '+error);
+    }
+
+  }
+
   //actualizar datos del doctor
   exports.Actualizar_datos_doctor =  async function (req,res) {
     try{
