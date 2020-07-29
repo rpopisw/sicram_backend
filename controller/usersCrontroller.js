@@ -66,7 +66,7 @@ exports.SingninUsuario = function(req, res) {
             });
             console.log(user.id);
             // retornamos la informacion incluyendo el token como json
-            res.json({success: true, token: 'Bearer ' + token});
+            res.json({success: true,id:user._id, token: 'Bearer ' + token});
           } else {
             res.status(401).send({success: false, msg: 'LA AUTENTICACION FALLO PASSWORD INCORRECTO '});
           }
