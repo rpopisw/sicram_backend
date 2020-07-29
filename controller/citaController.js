@@ -28,7 +28,12 @@ exports.GenerarNuevaCita = async function (req,res) {
                 if(doctor.especialidad.equals(especialidad._id)){
                     var horario = await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor});
                     //si horario es true
-                    if(horario){console.log('HORARIO: ' +horario);
+                    if(horario){
+                        if(horario.cita){
+                            console.log('');
+                            res.json({msg: 'HORARIO YA ESTA USADO ',cita:horario.cita});
+                        }else{
+                            console.log('HORARIO: ' +horario);
                         //agregando el doctor y el usuario a la nueva cita
                         nuevacita.user=paciente;
                         nuevacita.doctor=doctor;
@@ -53,6 +58,8 @@ exports.GenerarNuevaCita = async function (req,res) {
                         horario.cita = nuevacita;
                         //guardamos al horario con su cita
                         await horario.save();
+                        }
+                        
                     
                     // res.send(nuevacita);  me sale error de cabecera si hago res.send
                     }else{
