@@ -244,3 +244,22 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
         console.log('ERROR  '+err);
     }
 }
+
+exports.Obtener_citas_dependiente = async function(req,res){
+
+    try{
+        var token = getToken(req.headers);
+        if (token) {
+
+           var dependiente =  await Dependiente.findById(req.params.id).populate('cita');
+           res.json(dependiente.cita);
+
+
+        }else{
+            return res.status(403).send({success: false, msg: 'Unauthorized.'});
+             }
+    }catch(err){
+        console.log('ERROR  '+err);
+    }
+
+}

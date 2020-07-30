@@ -48,6 +48,8 @@ router.post('/user/dependiente/agregar/:id',passport.authenticate('user', { sess
 router.get('/user/dependiente/listar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Obtener_Dependientes);
 //ENDPOINT PARA CITA DE DEPENDIENTE
 router.post('/user/dependiente/cita/crear/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Agregar_Cita_Dependiente);
+// listar citas por id dependiente 
+router.get('/user/dependiente/citas/:id',dependienteCotroller.Obtener_citas_dependiente);
 
 
 
