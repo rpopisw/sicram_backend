@@ -278,7 +278,7 @@ var Cita = require('../models/cita');
       if (token) {
          if(req.user.id==req.params.id){
 
-              console.log('listando Citas --');    
+              console.log('listando Citas  --');    
               var doctor = await Doctor.findById(req.params.id).populate('cita');
               res.json(doctor.cita);
 
