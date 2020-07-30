@@ -97,7 +97,7 @@ exports.Obtener_Citas_Paciente = async function(req,res){
                     }else{
                         res.status(200).json(citas);
                     }
-                }).populate('horario');//.populate('especialidad');
+                }).populate('horario').populate('especialidad').populate('doctor');
 
 
             }else{
