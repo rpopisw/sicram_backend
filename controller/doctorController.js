@@ -163,6 +163,8 @@ var Cita = require('../models/cita');
           console.log(doctor);
           doctor.email=req.body.email;
           doctor.celular=req.body.celular;
+          doctor.edad=req.body.edad;
+
           await doctor.save((err,doctorUpdate)=>{
             if (err) {
               res.send('error al guardar al doctor actualizado :'+err);

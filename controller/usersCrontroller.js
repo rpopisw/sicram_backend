@@ -113,6 +113,10 @@ exports.Obntener_datos_Paciente = async function (req,res) {
             console.log(paciente);
             paciente.email=req.body.email;
             paciente.discapacidad=req.body.discapacidad;
+            paciente.direccion=req.body.direccion;
+            paciente.edad=req.body.edad;
+            paciente.celular=req.body.celular;
+
             await paciente.save((err,pacienteUpdate)=>{
               if (err) {
                 console.log('error al guarar paciente :'+err);
