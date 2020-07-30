@@ -124,7 +124,7 @@ var Cita = require('../models/cita');
         if (token) {
            if(req.user.id==req.params.id){
                 console.log('doctor ? '/*+  req.doctor.id*/);    
-                var doctor = await Doctor.findById(req.params.id);
+                var doctor = await Doctor.findById(req.params.id).populate('especialidad');
                 res.send(doctor);
            }else{
              

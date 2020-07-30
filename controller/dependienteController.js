@@ -87,9 +87,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
         var token = getToken(req.headers);
         if (token) {
  
-            if(req.user.id==req.params.id){
-                    
-                await Dependiente.findOne({user:req.user.id},async (err,dependiente)=>{
+                await Dependiente.findOne({_id:req.params.id},async (err,dependiente)=>{
                     if(err){
                         res.json({msg:'no encontro las dependientes'})
                     }else{
@@ -162,9 +160,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                     }
                 });
 
-            }else{
-             res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)
-            }
+            
 
 
             /*
