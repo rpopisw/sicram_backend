@@ -26,7 +26,8 @@ router.post('/doctor/horario/agregar/:id',passport.authenticate('doctor', { sess
 //horarios por id de doctor
 router.get('/doctor/horarios/:id',doctorController.Obtener_horario_doctor)
 
-
+//CITAS DEL DOCTOR
+//listar citas del doctor
 //CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
 router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
 

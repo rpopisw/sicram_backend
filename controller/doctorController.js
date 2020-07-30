@@ -143,7 +143,7 @@ var Cita = require('../models/cita');
     try{
       
             var doctor = await Doctor.findById(req.params.id).populate('horario');
-            res.json(doctor.horario);
+            res.json(doctor);
           
     }catch(error){
             res.json({msg: 'id incorrecto, no se encontro doctor'})
@@ -270,6 +270,28 @@ var Cita = require('../models/cita');
      console.error('ERRRRORRRRRRR--------------------------------' + err)
     throw err
     }
+  }
+  //listar citas Doctor
+  exports.Obtener_Citas_Doctor = async function(req,res){
+    try{
+      var token = getToken(req.headers);
+      if (token) {
+         if(req.user.id==req.params.id){
+
+              console.log('listando Citas --');    
+              var doctor = await Doctor.findById(req.params.id).populate('cita');
+              res.json(doctor.cita);
+
+         }else{
+          res.send('NO ES EL USUARIO    ' +   req.user.id + ' username :  ' + req.user.username + '  comparando con ' + req.params.id);
+          }
+      }else{
+          return res.status(403).send({success: false, msg: 'Unauthorized.'});
+           }
+  }catch(error){
+      console.log('ERRORCITO  '+error);
+  }
+
   }
   
 
