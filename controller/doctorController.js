@@ -277,19 +277,24 @@ var Cita = require('../models/cita');
       var token = getToken(req.headers);
       if (token) {
          if(req.user.id==req.params.id){
+              console.log('obtener Citas :  '+req.user.id);    
+              await Cita.find({doctor:req.user.id},(err,citas)=>{
+                  if(err){
+                      res.json({msg:'no encontro las cita'})
+                  }else{
+                      res.status(200).json(citas);
+                  }
+              }).populate('horario').populate('especialidad').populate('doctor');
 
-              console.log('listando Citas  --');    
-              var doctor = await Doctor.findById(req.params.id).populate('cita');
-              res.json(doctor.cita);
 
-         }else{
-          res.send('NO ES EL USUARIO    ' +   req.user.id + ' username :  ' + req.user.username + '  comparando con ' + req.params.id);
+          }else{
+           res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)
           }
       }else{
           return res.status(403).send({success: false, msg: 'Unauthorized.'});
            }
-  }catch(error){
-      console.log('ERRORCITO  '+error);
+  }catch(err){
+      console.log('ERROR  '+err);
   }
 
   }
