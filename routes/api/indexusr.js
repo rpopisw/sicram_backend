@@ -37,6 +37,8 @@ router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: f
 //actualizar citas
 router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
 
+router.post('/user/cita/eliminar_prueba',citaController.Eliminar_cita_prueba);
+
 
 
 //ENDPOINT PARA DEPENDIENTE-------------------------------
