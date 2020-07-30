@@ -95,7 +95,7 @@ exports.Agregar_Cita_Dependiente = async function(req,res){
                         //creando nueva cita
                         var nuevacita = new Cita();
                         //encontrando al usuario por parametro
-                        var paciente = await User.findById(req.params.id);   //deberia ser metido por parametro
+                        var paciente = await User.findById(req.user.id);   //deberia ser metido por parametro
                         console.log(paciente.username);
                         //econtrando al doctor por parametro
                         var doctor = await Doctor.findById(req.body._iddoctor);
