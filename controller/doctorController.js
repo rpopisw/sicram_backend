@@ -284,7 +284,7 @@ var Cita = require('../models/cita');
                   }else{
                       res.status(200).json(citas);
                   }
-              }).populate('horario').populate('especialidad').populate('doctor');
+              }).populate('horario').populate('especialidad').populate('user');
 
 
           }else{
