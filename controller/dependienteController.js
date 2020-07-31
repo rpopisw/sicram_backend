@@ -27,26 +27,27 @@ exports.Agregar_Dependiente = async function(req,res){
                 //agregamos el usuario encontrado en el dependiente
                 newDependiente.user=user;
                 //save del nuevo dependiente
-                await  newDependiente.save((erro,dependiente)=>{
-                    if (erro) {
-                        res.send('error al guardar al dependiente correo ya usado:');
-                    } else {
+                await  newDependiente.save(async (erro,dependiente)=>{
+                        if (erro) {
+                        res.json({msg: 'error al guardar al dependiente correo ya usado:'});
+                         } else {
                         console.log('se guardo dependiente: '+ dependiente);
-                        res.status(200).json({msg: 'nuevo dependiente guardado'});
+                        //pusheamos el nuevo dependiente al paciente
+                        user.dependiente.push(dependiente);
+                         //guardamos user actualizado
+                            await user.save((err,user)=>{
+                            if (err) {
+                            res.json({msg: 'error al guardar al usuario :'});
+                            throw err
+                            }else{
+                            res.status(200).json({msg: 'nuevo dependiente guardado'});
+                            }
+                        });
+                        
                     }
                     });
                 
-                //pusheamos el nuevo dependiente al paciente
-                user.dependiente.push(newDependiente);
-                //guardamos user actualizado
-                await user.save((err,user)=>{
-                    if (err) {
-                        res.send('error al guardar al usuario :'+err);
-                        throw err
-                    }else{
-                        res.status(200).json({msg: 'nuevo dependiente guardado'});
-                    }
-                    });
+                
 
             }else{
              res.send('NO ES EL USUARIO   ' +   req.user.id + ' comparando con ' + req.params.id)

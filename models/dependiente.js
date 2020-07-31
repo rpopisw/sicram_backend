@@ -13,7 +13,6 @@ var DependienteSchema = new Schema({
     email:  {
             type: String,
             required: true,
-            unique: true
     },
     dni: {
             type: Number,

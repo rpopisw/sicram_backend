@@ -116,7 +116,6 @@ exports.Obntener_datos_Paciente = async function (req,res) {
             paciente.direccion=req.body.direccion;
             paciente.edad=req.body.edad;
             paciente.celular=req.body.celular;
-
             await paciente.save((err,pacienteUpdate)=>{
               if (err) {
                 console.log('error al guarar paciente :'+err);
