@@ -38,11 +38,13 @@ exports.Agregar_Dependiente = async function(req,res){
                 
                 //pusheamos el nuevo dependiente al paciente
                 user.dependiente.push(newDependiente);
-                //guardamos dooctor actualizado
+                //guardamos user actualizado
                 await user.save((err,user)=>{
                     if (err) {
                         res.send('error al guardar al usuario :'+err);
                         throw err
+                    }else{
+                        res.status(200).json({msg: 'nuevo dependiente guardado'});
                     }
                     });
 
