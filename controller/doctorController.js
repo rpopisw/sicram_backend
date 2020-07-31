@@ -143,7 +143,7 @@ var Cita = require('../models/cita');
     try{
       
             var doctor = await Doctor.findById(req.params.id).populate('horario');
-            res.json(doctor);
+            res.json(doctor.horario);
           
     }catch(error){
             res.json({msg: 'id incorrecto, no se encontro doctor'})
