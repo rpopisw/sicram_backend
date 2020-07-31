@@ -117,15 +117,15 @@ exports.Actualizar_Citas = async function(req,res){
         if (token) {
            if(req.user.id==req.params.id){
             //encontramos la cita por su codigo
-            await Cita.findOne({_id:req.body.id},async  (error,cita)=>{
+            await Cita.findOne({_id:req.body.id_cita},async  (error,cita)=>{
                 if (error) {
                     res.json({msg: 'cita no encontrada'});
                 } else {
                     
                     
-                    const paciente = await User.findOne({_id:req.body.id_usuario});
+                    const paciente = await User.findOne({_id:req.params.id});
                     const pacientes_cita_tmp = paciente.cita;
-                    const find_index = pacientes_cita_tmp.indexOf(req.body.id)
+                    const find_index = pacientes_cita_tmp.indexOf(req.body.id_cita)
                     pacientes_cita_tmp.splice(find_index,1);
 
                     await paciente.updateOne({_id:req.params.id},{$set : { cita:pacientes_cita_tmp }});
@@ -133,7 +133,7 @@ exports.Actualizar_Citas = async function(req,res){
 
                     const doctor = await Doctor.findOne({_id:req.body.id_doctor});
                     const doctor_cita_tmp = doctor.cita;
-                    const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id)
+                    const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id_cita)
                     doctor_cita_tmp.splice(find_index_doctor,1);
 
                     await doctor.updateOne({_id:req.body.id_doctor},{$set : { cita:doctor_cita_tmp }});
@@ -222,22 +222,22 @@ exports.Eliminar_cita = async function(req,res){
         if (token) {
            if(req.user.id==req.params.id){
             //encontramos la cita por su codigo
-            await Cita.findOne({_id:req.body.id},async  (error,cita)=>{
+            await Cita.findOne({_id:req.body.id_cita},async  (error,cita)=>{
                 if (error) {
                     res.json({msg: 'cita no encontrada'});
                 } else {
                     
-                    const paciente = await User.findOne({_id:req.body.id_usuario});
+                    const paciente = await User.findOne({_id:req.user.id});
                     const pacientes_cita_tmp = paciente.cita;
-                    const find_index = pacientes_cita_tmp.indexOf(req.body.id)
+                    const find_index = pacientes_cita_tmp.indexOf(req.body.id_cita)
                     pacientes_cita_tmp.splice(find_index,1);
 
-                    await paciente.updateOne({_id:req.body.id_usuario},{$set : { cita:pacientes_cita_tmp }});
+                    await paciente.updateOne({_id:req.user.id},{$set : { cita:pacientes_cita_tmp }});
 
 
                     const doctor = await Doctor.findOne({_id:req.body.id_doctor});
                     const doctor_cita_tmp = doctor.cita;
-                    const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id)
+                    const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id_cita)
                     doctor_cita_tmp.splice(find_index_doctor,1);
 
                     await doctor.updateOne({_id:req.body.id_doctor},{$set : { cita:doctor_cita_tmp }});
