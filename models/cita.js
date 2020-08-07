@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
 var CitaSchema = new Schema({
     especialidad:{
         type: Schema.Types.ObjectId,

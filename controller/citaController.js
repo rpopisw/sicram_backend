@@ -1,3 +1,4 @@
+//OBTENIENDO DATOS DEL MODEL
 var User = require("../models/user");
 var Cita = require("../models/cita");
 var Doctor = require("../models/doctor");
@@ -85,6 +86,8 @@ exports.GenerarNuevaCita = async function (req,res) {
         res.status(400).json({msg: 'Codigo Doctor no encontrado'});
    }
 }
+
+//obtener nuevas citas
 exports.Obtener_Citas_Paciente = async function(req,res){
     try{
         var token = getToken(req.headers);
@@ -111,6 +114,8 @@ exports.Obtener_Citas_Paciente = async function(req,res){
     }
 }
 
+
+//ACTUALIZAR CITAS MEDIANTE ASYNC AWAIT para que el servidor espere por esta accion
 exports.Actualizar_Citas = async function(req,res){
     try{
         var token = getToken(req.headers);
@@ -260,6 +265,7 @@ exports.Eliminar_cita = async function(req,res){
    }
 }
 
+//ELIMINANDO CITAS DE LA MISMA FORMA CON ASYNC AWAIT
 exports.Eliminar_cita_prueba = async function(req,res){
     try{
         
