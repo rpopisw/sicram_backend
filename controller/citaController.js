@@ -15,20 +15,20 @@ exports.GenerarNuevaCita = async function (req,res) {
             //creando nueva cita
             var nuevacita = new Cita();
             //encontrando al usuario por parametro
-            var paciente = await User.findById(req.user._id);   //deberia ser metido por parametro
+            var paciente = await User.findById(req.user._id);   
             console.log(paciente.username);
             //econtrando al doctor por parametro
-            var doctor = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
+            var doctor = await Doctor.findById(req.body._iddoctor); 
             console.log(doctor.username);
             //encontrando especialidad
             var especialidad = await Especialidad.findOne({especialidad: req.body.especialidad});
-            //si especialidad es true
+            //si especialidad existe
             if(especialidad){
                 console.log(especialidad._id + '  COMPARA  ' + doctor.especialidad)
                 //si especialidad es la del doctor
                 if(doctor.especialidad.equals(especialidad._id)){
                     var horario = await Horario.findOne({fecha:req.body.fecha,hora_inicio:req.body.hora_inicio,hora_fin:req.body.hora_fin,doctor: doctor});
-                    //si horario es true
+                    //si horario exisete
                     if(horario){
                         if(horario.cita){
                             console.log('');
@@ -43,7 +43,7 @@ exports.GenerarNuevaCita = async function (req,res) {
                         //guardamos nueva cita con su doctor y su usuario respectivo
                         await  nuevacita.save(function(err) {
                             if (err) {
-                            return res.json({success: false, msg: 'Error al guardar la cita'});
+                            return res.json({success: false, msg: 'E+rror al guardar la cita'});
                             }
                             res.json({success: true, msg: 'Exito nueva cita creada.'});
                         });
