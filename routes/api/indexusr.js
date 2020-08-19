@@ -11,7 +11,7 @@ const { route } = require('./indexdct');
 
 
 router.get('/',function (req,res) {
-  res.send("a ver."); 
+  res.render("index",{title:"SICRAM"}); 
 });
 
 //ENDPOINT DEL PACIENTE----------------------------

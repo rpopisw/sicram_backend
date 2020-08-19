@@ -6,7 +6,7 @@ var doctorController = require("../../controller/doctorController");
 const { route } = require('./indexusr');
 
 router.get('/',function (req,res) {
-  res.send("a ver."); 
+  res.render("index",{title:"SICRAM"}); 
 });
 /**---------------------------------------------------------------------------- */
 //crera un nuevo usuario REGISTANDOTE
@@ -31,6 +31,12 @@ router.get('/doctor/horarios/:id',doctorController.Obtener_horario_doctor)
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
 //CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
 router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
+
+//RECETAS DOCTORS
+//datos iniciales de la nueva receta
+router.get('/doctor/receta/datos/:id',passport.authenticate('doctor', { session: false}),doctorController.Enviar_Datos_Nueva_Receta)
+//crear nueva receta
+router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),doctorController.Crear_Nueva_Receta)
 
 
 module.exports = router;

@@ -7,7 +7,8 @@ var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var pup = require("../tools/scrapers");
 var Cita = require("../models/cita");
-
+var User = require("../models/user");
+var Receta = require("../models/receta");
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -359,6 +360,7 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no encontro las cita" });
           } else {
+            logger(chalk.blue("CITA ENCONTRADA: ")+chalk.magenta(citas.length));
             res.status(200).json(citas);
           }
         })
@@ -386,6 +388,173 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
   } catch (err) {
     logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
+};
+
+
+//el obtendra los datos de la cita para colocarlas por defecto a la receta
+exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if(req.user.id == req.params.id) {
+        //Encontrando al docotor que esta haciendo la cita
+        await Doctor.findById(req.user.id,async(err,doctor)=>{
+          try {
+              if (err){
+                logger(chalk.red("ERR ")+ chalk.white("no se encontro el doctor"));
+              }else{
+                //mensaje encontrando al doctor
+                logger(chalk.blue("mensaje: ")+ chalk.green("se encontro al doctor: ")+ chalk.magenta(doctor.lastname));
+                //encontrando cita por ID mandado por Body 
+                await Cita.findById(req.body.id_cita,async(err,cita)=>{
+                  try {
+                    if (err){
+                      logger(chalk.red("ERR ")+ chalk.white("no se encontro la cita"));
+                      logger(chalk.red("ERR ")+ chalk.white(err));
+                      res.send({msg:"cita no colocada"})
+                    }else{
+                      await User.findById(cita.user,async (err,paciente)=>{
+                        try {
+                          await Horario.findById(cita.horario,(err,horario)=>{
+                            console.log(chalk.blue("nombre del paciente de la receta: ")+chalk.yellow(paciente.username))
+                            console.log(chalk.blue("nombre del doctor de la receta: ")+chalk.yellow(doctor.username))
+                            res.json({receta:"OK",paciente:paciente.username,doctor:doctor.username,horario:"De "+horario.hora_inicio +" hasta "+horario.hora_fin,fecha:horario.fecha})
+                          })
+                      } catch (error) {
+                        logger(chalk.red("ERROR: ")+ chalk.white(error));
+                        res.send({msg:"ERROR: "+error})
+                      }
+                      })
+                    }
+                  } catch (error) {
+                    logger(chalk.red("ERROR: ")+ chalk.white(error));
+                    res.send({msg:"ERROR: "+error})
+                  }
+                })
+              }
+          } catch (error) {
+            logger(chalk.red("ERROR: ")+ chalk.white(error));
+            res.send({msg:"ERROR: "+error})
+          }
+          
+        })
+
+      }else{
+        logger(
+        chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + 
+        chalk.blue("comparado con ") + chalk.magenta(req.params.id)
+        );
+        res.send(
+            "NO ES EL USUARIO   " + req.user.id +
+            " comparando con " + req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ")+ chalk.white(err));
+  }
+};
+exports.Crear_Nueva_Receta = async function(req, res){
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if(req.user.id == req.params.id) {
+        //generando nueva receta
+        var receta = new Receta({
+          medicina: req.body.medicina,
+          indicaciones: req.body.indicaciones,
+          nombredoctor: req.body.nombredoctor,
+          nombrepaciente: req.body.nombrepaciente,
+          horario: req.body.horario,
+          fecha: req.body.fecha
+        });
+        await Cita.findById(req.body.id_cita,async(err,cita)=>{
+          try {
+            if(err){
+              logger(chalk.red("ERR ")+ chalk.white("no se encontro la Cita"));
+            }else{
+              //guardamos la receta en la cita
+              cita.receta = receta;
+              //guardamos la cita en la receta
+              receta.cita = cita;
+              //save
+              await cita.save();
+              await receta.save();
+              res.send({msg:"receta creada"})
+            }
+          } catch (error) {
+            logger(chalk.red("ERROR: ")+ chalk.white(error));
+            res.send({msg:"ERROR: "+error})
+          }
+          
+        })
+
+
+
+
+
+        /*
+        //Encontrando al docotor que esta haciendo la cita
+        await Doctor.findById(req.user.id,async(err,doctor)=>{
+          try {
+              if (err){
+                logger(chalk.red("ERR ")+ chalk.white("no se encontro el doctor"));
+              }else{
+                //mensaje encontrando al doctor
+                logger(chalk.blue("mensaje: ")+ chalk.green("se encontro al doctor: ")+ chalk.magenta(doctor.lastname));
+                //encontrando cita por ID mandado por Body 
+                await Cita.findById(req.body.id_cita,async(err,cita)=>{
+                  try {
+                    if (err){
+                      logger(chalk.red("ERR ")+ chalk.white("no se encontro la cita"));
+                      logger(chalk.red("ERR ")+ chalk.white(err));
+                      res.send({msg:"cita no colocada"})
+                    }else{
+                      await User.findById(cita.user,async (err,paciente)=>{
+                        try {
+                          await Horario.findById(cita.horario,(err,horario)=>{
+                            console.log(chalk.blue("nombre del paciente de la receta: ")+chalk.yellow(paciente.username))
+                            console.log(chalk.blue("nombre del doctor de la receta: ")+chalk.yellow(doctor.username))
+                            res.json({receta:"OK",paciente:paciente.username,doctor:doctor.username,horario:"De "+horario.hora_inicio +" hasta "+horario.hora_fin,fecha:horario.fecha})
+                          })
+                      } catch (error) {
+                        logger(chalk.red("ERROR: ")+ chalk.white(error));
+                        res.send({msg:"ERROR: "+error})
+                      }
+                      })
+                    }
+                  } catch (error) {
+                    logger(chalk.red("ERROR: ")+ chalk.white(error));
+                    res.send({msg:"ERROR: "+error})
+                  }
+                })
+              }
+          } catch (error) {
+            logger(chalk.red("ERROR: ")+ chalk.white(error));
+            res.send({msg:"ERROR: "+error})
+          }
+          
+        })
+        */
+      }else{
+        logger(
+        chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + 
+        chalk.blue("comparado con ") + chalk.magenta(req.params.id)
+        );
+        res.send(
+            "NO ES EL USUARIO   " + req.user.id +
+            " comparando con " + req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ")+ chalk.white(err));
+    res.send({msg:"ERROR: "+err})
+  } 
 };
 
 getToken = function (headers) {

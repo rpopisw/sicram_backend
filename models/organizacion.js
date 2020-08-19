@@ -25,6 +25,10 @@ var OrganizacionSchema = new Schema({
         type: String,
         required: true,
   },
+  especialidad:[{
+      type: Schema.Types.ObjectId,
+      ref: 'Especialidad'
+  }],
   doctor:[{
         type: Schema.Types.ObjectId,
         ref: 'Doctor'

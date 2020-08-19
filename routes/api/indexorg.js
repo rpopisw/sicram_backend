@@ -6,7 +6,7 @@ var organizacionController = require("../../controller/organizacionController");
 const { route } = require('./indexusr');
 
 router.get('/',function (req,res) {
-  res.send("a ver."); 
+  res.render("index",{title:"SICRAM"});  
 });
 
 /**ENDPOINTS ORGANIZACION---------------------------------------------------------------------------- */
@@ -24,7 +24,7 @@ router.post('/organizacion/perfil/update/:id',passport.authenticate('organizacio
 
 
 //agregar doctor ------
-
+router.post('/organizacion/registrardoctor/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Registrar_Doctor_En_Organization)
 //
 
 

@@ -23,6 +23,10 @@ var CitaSchema = new Schema({
     user:{
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    receta:{
+        type: Schema.Types.ObjectId,
+        ref: 'Receta'
     }
 });
 
