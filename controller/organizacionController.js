@@ -182,7 +182,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
   }
 };
 
-//AGREGAR DOCTOR EN ORGANIZACION
+//AGREGAR DOCTOR EN ORGANIZACION tambien puede elegir las especialidades a las que se dirige
 exports.Registrar_Doctor_En_Organization = async function (req, res) {
   try {
     console.log(req.headers)
