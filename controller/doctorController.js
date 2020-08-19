@@ -456,7 +456,7 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
     logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
 };
-
+//creacion de la receta
 exports.Crear_Nueva_Receta = async function(req, res){
   try {
     var token = getToken(req.headers);
