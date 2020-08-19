@@ -304,7 +304,6 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
     logger(chalk.red("ERR  ") + chalk.white(e));
   }
 }
-
 exports.Asignar_Horario_Medicos = async function (req, res) {
   try {
     console.log(req.headers)
