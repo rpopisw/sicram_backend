@@ -391,7 +391,7 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
 };
 
 
-//el obtendra los datos de la cita para colocarlas por defecto a la receta antes de crear la receta la receta tendra sus datos de nombre doctor.
+//el obtendra los datos de la cita para colocarlas por defecto a la receta
 exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
   try {
     var token = getToken(req.headers);
