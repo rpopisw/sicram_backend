@@ -9,6 +9,7 @@ var indexDoctorApiRouter = require('./routes/api/indexdct');
 var indexOrganizacionApiRouter = require('./routes/api/indexorg');
 var cmpScrapApiRouter = require('./routes/api/scrap');
 var usersRouter = require('./routes/users');
+var opentokApiRouter = require('./routes/api/opentk')
 var passport =  require('passport');
 
 
@@ -41,7 +42,7 @@ app.use('/api', indexUserApiRouter);
 app.use('/api', indexDoctorApiRouter);
 app.use('/api', indexOrganizacionApiRouter);
 app.use('/cmp', cmpScrapApiRouter);
-
+app.use('/opentok',opentokApiRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

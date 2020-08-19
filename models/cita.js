@@ -27,7 +27,16 @@ var CitaSchema = new Schema({
     receta:{
         type: Schema.Types.ObjectId,
         ref: 'Receta'
+    },
+    aulaVirtual:{
+        sessionId:{
+            type: String,
+        },
+        sessionToken:{
+            type: String
+        }
     }
 });
+
 
 module.exports = mongoose.model('Cita',CitaSchema);

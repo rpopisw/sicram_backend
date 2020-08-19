@@ -4,6 +4,7 @@ var Cita = require("../models/cita");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
+var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const logger = console.log;
 //generar nueva citas
@@ -12,83 +13,122 @@ exports.GenerarNuevaCita = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-        logger(chalk.green(req.body));
         //creando nueva cita
         var nuevacita = new Cita();
         //encontrando al usuario por parametro
-        var paciente = await User.findById(req.user._id);
-        logger(chalk.green(paciente.username));
+        var paciente = await User.findById(req.params.id);
+        logger(chalk.green(paciente.username)); 
         //econtrando al doctor por parametro
-        var doctor = await Doctor.findById(req.body._iddoctor);
-        logger(chalk.green(doctor.username));
-        //encontrando especialidad
-        var especialidad = await Especialidad.findOne({
-          especialidad: req.body.especialidad,
-        });
-        //si especialidad existe
-        if (especialidad) {
-          logger(
-            chalk.green(especialidad._id) +
-              chalk.blue("  COMPARA  ") +
-              chalk.magenta(doctor.especialidad)
-          );
-          //si especialidad es la del doctor
-          if (doctor.especialidad.equals(especialidad._id)) {
-            var horario = await Horario.findOne({
-              fecha: req.body.fecha,
-              hora_inicio: req.body.hora_inicio,
-              hora_fin: req.body.hora_fin,
-              doctor: doctor,
-            });
-            //si horario exisete
-            if (horario) {
-              if (horario.cita) {
-                logger(chalk.red("HORARIO USADO"));
-                res.json({ msg: "HORARIO YA ESTA USADO ", cita: horario.cita });
-              } else {
-                logger(chalk.blue("HORARIO: ") + chalk.green(horario));
-                //agregando el doctor y el usuario a la nueva cita
-                nuevacita.user = paciente;
-                nuevacita.doctor = doctor;
-                nuevacita.especialidad = especialidad;
-                nuevacita.horario = horario;
-                //guardamos nueva cita con su doctor y su usuario respectivo
-                await nuevacita.save(function (err) {
-                  if (err) {
-                    return res.json({
-                      success: false,
-                      msg: "Error al guardar la cita",
-                    });
+        /*var doctor = */await Doctor.findById(req.body._iddoctor,async(err,doctor) =>{
+          try {
+            logger(chalk.green(doctor.username));
+            //encontrando especialidad
+            /*var especialidad = */await Especialidad.findOne({
+            especialidad: req.body.especialidad,
+            },async(err,especialidad)=>{
+              try {
+                        //si especialidad existe
+                    if (especialidad) {
+                      logger(
+                        chalk.green(especialidad._id) +
+                          chalk.blue("  COMPARA  ") +
+                          chalk.magenta(doctor.especialidad)
+                      );
+                      //si especialidad es la del doctor
+                      if (doctor.especialidad.equals(especialidad._id)) {
+                        var horario = await Horario.findOne({
+                          fecha: req.body.fecha,
+                          hora_inicio: req.body.hora_inicio,
+                          hora_fin: req.body.hora_fin,
+                          doctor: doctor,
+                        });
+                        //si horario exisete
+                        if (horario) {
+                          if (horario.cita) {
+                            logger(chalk.red("HORARIO USADO"));
+                            res.json({ msg: "HORARIO YA ESTA USADO ", cita: horario.cita });
+                          } else {
+                            logger(chalk.blue("HORARIO: ") + chalk.green(horario));
+                            //agregando el doctor y el usuario a la nueva cita
+                            nuevacita.user = paciente;
+                            nuevacita.doctor = doctor;
+                            nuevacita.especialidad = especialidad;
+                            nuevacita.horario = horario;
+                            //agregamos el token y la session a la citanueva
+                            await optk.createSession(async(err, session)=>{
+                              try {
+                                if (err) {
+                                  logger(chalk.red("ERROR: ")+ chalk.white(err));
+                                }else{
+                                    logger(chalk.blue("sessionID: ")+ chalk.magenta(session.sessionId));
+                                    var sessiontoken = optk.generateToken(session.sessionId);
+                                    logger(chalk.blue("sessiontoken: ")+ chalk.magenta(sessiontoken));
+                                    var aulaVirtual ={
+                                      sessionId:session.sessionId,
+                                      sessionToken:sessiontoken
+                                    };
+                                    logger(chalk.blue("aulavirtual: ")+ chalk.magenta(aulaVirtual.sessionId));
+                                    nuevacita.aulaVirtual = {
+                                      sessionId:session.sessionId,
+                                      sessionToken:sessiontoken
+                                    }
+                                    logger(chalk.blue("aulavirtual: ")+ chalk.magenta(nuevacita.aulaVirtual));
+                                     //guardamos nueva cita con su doctor y su usuario respectivo
+                                    await nuevacita.save(function (err) {
+                                      if (err) {
+                                        return res.json({
+                                          success: false,
+                                          msg: "Error al guardar la cita",
+                                        });
+                                      }
+                                      res.json({ success: true, msg: "Exito nueva cita creada." });
+                                    });
+                                    //agregamos la cita para el usuario.
+                                    paciente.cita.push(nuevacita);
+                                    //agregamos la cita para el doctor
+                                    doctor.cita.push(nuevacita);
+                                    //guardamos al user con su cita
+                                    await paciente.save();
+                                    //guardamos al doctor con su cita
+                                    await doctor.save();
+                                    //guardamos la cita en el horario
+                                    horario.cita = nuevacita;
+                                    //guardamos al horario con su cita
+                                    await horario.save();
+                                }
+                              } catch (error) {
+                                logger(chalk.red("ERROR: ") + chalk.white(error));
+                                res.status(400).json({ msg: "ERROR"+error });
+                              }   
+                          });
+                           
+                          }
+          
+                        // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                      } else {
+                        logger(chalk.red("HORARIO NO COINCIDE "));
+                        res.json({ msg: "HORARIO NO COINCIDE" });
+                      }
+                    } else {
+                      logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
+                      res.json({ msg: "La especialidad del doctor no coincide" });
+                    }
+                  } else {
+                    logger(chalk.red("HORARIO NO ENCONTRADA"));
+                    res.status(400).json({ msg: "especialidad no encontrada" });
                   }
-                  res.json({ success: true, msg: "Exito nueva cita creada." });
-                });
-                //agregamos la cita para el usuario.
-                paciente.cita.push(nuevacita);
-                //agregamos la cita para el doctor
-                doctor.cita.push(nuevacita);
-                //guardamos al user con su cita
-                await paciente.save();
-                //guardamos al doctor con su cita
-                await doctor.save();
-                //guardamos la cita en el horario
-                horario.cita = nuevacita;
-                //guardamos al horario con su cita
-                await horario.save();
+              } catch (error) {
+                logger(chalk.red("ERROR: ") + chalk.white(error));
+                res.status(400).json({ msg: "ERROR"+error });
               }
-
-              // res.send(nuevacita);  me sale error de cabecera si hago res.send
-            } else {
-              logger(chalk.red("HORARIO NO COINCIDE "));
-              res.json({ msg: "HORARIO NO COINCIDE" });
-            }
-          } else {
-            logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
-            res.json({ msg: "La especialidad del doctor no coincide" });
+            });
+            
+          } catch (error) {
+            logger(chalk.red("ERROR: ") + chalk.white(error));
+            res.status(400).json({ msg: "ERROR"+error });
           }
-        } else {
-          logger(chalk.red("HORARIO NO ENCONTRADA"));
-          res.status(400).json({ msg: "especialidad no encontrada" });
-        }
+        })
+        
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
@@ -108,6 +148,7 @@ exports.GenerarNuevaCita = async function (req, res) {
     }
   } catch (err) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
+    logger(chalk.green(req.body._iddoctor));
     res.status(400).json({ msg: "Codigo Doctor no encontrado" });
   }
 };
