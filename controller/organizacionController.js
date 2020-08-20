@@ -6,6 +6,7 @@ var Organizacion = require("../models/organizacion");
 var pup = require("../tools/scrapers");
 var Doctor = require("../models/doctor")
 var Especialidad = require("../models/especialidad")
+var Horario = require("../models/horario")
 
 const chalk = require("chalk");
 const logger = console.log;
@@ -34,6 +35,7 @@ exports.SignupOrganizacion = async function (req, res) {
               email: req.body.email,
               nameOrg: req.body.nameOrg,
               direccion: req.body.direccion,
+              ruc: req.body.ruc,
             });
             await newOrg.save(function (error, newOrga) {
               if (error) {
@@ -320,6 +322,7 @@ exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
           }else{
             //ahora enviamos el docotor
             logger(chalk.blue("organizacion: ") + chalk.green(organizacion.username));
+            logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(organizacion.doctor.length));
             res.status(200).json(organizacion.doctor);
           }
         }).populate('doctor');
@@ -349,13 +352,92 @@ exports.Asignar_Horario_Medicos = async function (req, res) {
     console.log(req.headers)
     var token = getToken(req.headers);
       if (token) {
-        //TODO
-
+        if (req.user.id == req.params.id) {
+          //buscamos la organizacion
+          /*await Organizacion.findById(req.user.id,async(err,organizacion) => {
+            try {*/
+              //buscamos doctor
+              await Doctor.findById(req.body.id_doctor,async (err,doctor) => {
+                try {
+                  logger(chalk.blue("datos doctor: ") + chalk.green(doctor));
+                if (!doctor) {
+                  logger(chalk.blue("msg: ")+ chalk.white("no se encontro el doctor"));
+                  res.status(400).json({ msg: "no se encontro el doctor" });
+                }else{
+                  //se encontro al doctor
+                  logger(chalk.blue("Encontro Doctor: ") + chalk.green(doctor.lastname));
+                  //condicion que el doctor pertenesca a la organizacion
+                  if(doctor.organizacion!=req.user.id){
+                    logger(chalk.blue("msg: ") + chalk.white("doctor: "+doctor.organizacion+" no coincide con organizacion: "+req.user.id));
+                    res.status(400).json({ msg: "EL DOCTOR NO PERTENCE A LA ORGANIZACION" });
+                  }else{
+                    logger(chalk.blue("SI PERTENECE Doctor: ") + chalk.green(doctor.lastname));
+                    //res.status(400).json({ msg: "SI PERTENECE" });
+                    //AGREGAMOS EL HORARIO DEL DOCTOR
+                    var horarioEncontrado = await Horario.findOne({
+                      fecha: req.body.fecha,
+                      hora_inicio: req.body.hora_inicio,
+                      hora_fin: req.body.hora_fin,
+                      doctor: doctor,
+                    });
+                    if (horarioEncontrado) {
+                      res.json({ msg: "YA EXISTE ESE HORARIO PARA EL DOCTOR" });
+                    } else {
+                      logger(chalk.magenta("puedes poner horario"));
+                      //nuevo horario agarramos por body los datos
+                      var newhorario = new Horario({
+                        fecha: req.body.fecha,
+                        hora_inicio: req.body.hora_inicio,
+                        hora_fin: req.body.hora_fin,
+                      });
+                      //agregamos el doctor del horario gracias al token
+                      newhorario.doctor = doctor;
+                      logger(chalk.blue("nuevo horario --- : ") + chalk.green(newhorario));
+                      //guardamos horario
+                      await newhorario.save((err, horario) => {
+                        if (err) {
+                          logger(chalk.red("Error al guardar horario"));
+                          res.json({msg:"error al guardar al horario :" + err});
+                        } else {
+                          logger(chalk.blue("Se guardó el horario"));
+                          res.status(200).json({ msg: "nuevo horario guardado" });
+                        }
+                      });
+                      //pusheamos el areglo de horarios del doctor
+                      doctor.horario.push(newhorario);
+                      //guardamos dooctor actualizado
+                      await doctor.save();
+                    }
+                  }
+                }
+                } catch (error) {
+                  logger(chalk.red("ERROR: ") + chalk.white(error));
+                }
+              })
+            /*} catch (error) {
+              logger(chalk.red("ERROR: ") + chalk.white(error));
+              res.status(400).json({ msg: "ERROR"+error });
+            }
+          })*/
+        } else {
+          logger(
+            chalk.blue("NO es el usuario ") +
+              chalk.green(req.user.id) +
+              chalk.blue("comparado con ") +
+              chalk.magenta(req.params.id)
+          );
+          res.send(
+            "NO ES EL USUARIO   " +
+              req.user.id +
+              " comparando con " +
+              req.params.id
+          );
+        }
       } else {
         return res.status(403).send({ success: false, msg: "Unauthorized." });
       }
-  }catch (e) {
-    logger(chalk.red("ERR  ") + chalk.white(e));
+  }catch (error) {
+    logger(chalk.red("ERROR: ") + chalk.white(error));
   }
 }
 //metodo para confirmar que entro un token

@@ -27,6 +27,7 @@ router.post('/organizacion/perfil/update/:id',passport.authenticate('organizacio
 router.post('/organizacion/doctor/registrar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Registrar_Doctor_En_Organization)
 //obtener docotres de la organizacion
 router.get('/organizacion/doctor/obtener/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Obtener_Doctores_De_Organizacion)
-
+//asignar horarios del doctor por parte de la organizacion
+router.post('/organizacion/doctor/horario/asignar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Asignar_Horario_Medicos)
 
 module.exports = router;
