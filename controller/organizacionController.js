@@ -304,6 +304,46 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
     logger(chalk.red("ERR  ") + chalk.white(e));
   }
 }
+exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
+  try {
+    console.log(req.headers)
+    var token = getToken(req.headers);
+      if (token) {
+        //TODO
+      if (req.user.id == req.params.id) {
+        //encontramos la organizacion para  buscar sus doctores
+        await Organizacion.findById(req.user.id,(err,organizacion) => {
+          if (err){
+            //si hay un error en la busqueda
+            logger(chalk.red("ERR: ") + chalk.white(err));
+            res.status(401).json({ msg: "ERR: "+err });
+          }else{
+            //ahora enviamos el docotor
+            logger(chalk.blue("organizacion: ") + chalk.green(organizacion.username));
+            res.status(200).json(organizacion.doctor);
+          }
+        }).populate('doctor');
+      } else {
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+      }
+      } else {
+        return res.status(403).send({ success: false, msg: "Unauthorized." });
+      }
+  }catch (e) {
+    logger(chalk.red("ERR  ") + chalk.white(e));
+  }
+}
 exports.Asignar_Horario_Medicos = async function (req, res) {
   try {
     console.log(req.headers)
@@ -314,7 +354,6 @@ exports.Asignar_Horario_Medicos = async function (req, res) {
       } else {
         return res.status(403).send({ success: false, msg: "Unauthorized." });
       }
-    
   }catch (e) {
     logger(chalk.red("ERR  ") + chalk.white(e));
   }

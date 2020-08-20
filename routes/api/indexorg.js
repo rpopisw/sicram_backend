@@ -22,10 +22,11 @@ router.get('/organizacion/perfil/:id', passport.authenticate('organizacion', { s
 router.post('/organizacion/perfil/update/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Actualizar_Datos_Organizacion)
 
 
-
+//DOCTORES DE LA ORGANIZACION
 //agregar doctor ------
-router.post('/organizacion/registrardoctor/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Registrar_Doctor_En_Organization)
-//
+router.post('/organizacion/doctor/registrar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Registrar_Doctor_En_Organization)
+//obtener docotres de la organizacion
+router.get('/organizacion/doctor/obtener/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Obtener_Doctores_De_Organizacion)
 
 
 module.exports = router;
