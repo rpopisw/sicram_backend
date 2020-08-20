@@ -3,6 +3,9 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 
 var OrganizacionSchema = new Schema({
+  ruc:{
+      type: String,
+  },
   username: {
         type: String,
         unique: true,
