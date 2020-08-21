@@ -153,10 +153,11 @@ exports.Obtener_datos_doctor = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-        logger(chalk.blue("doctor: ") +chalk.green(req.doctor.id) );
+        
         var doctor = await Doctor.findById(req.params.id).populate(
           "especialidad"
         );
+        logger(chalk.blue("doctor: ") +chalk.green(doctor.username + " " + doctor.lastname) );
         res.send(doctor);
       } else {
         logger(
