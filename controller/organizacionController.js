@@ -313,19 +313,18 @@ exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
       if (token) {
         //TODO
       if (req.user.id == req.params.id) {
-        //encontramos la organizacion para  buscar sus doctores
-        await Organizacion.findById(req.user.id,(err,organizacion) => {
+        await Doctor.find({organizacion:req.user.id},(err,doctor)=>{
           if (err){
             //si hay un error en la busqueda
             logger(chalk.red("ERR: ") + chalk.white(err));
             res.status(401).json({ msg: "ERR: "+err });
           }else{
             //ahora enviamos el docotor
-            logger(chalk.blue("organizacion: ") + chalk.green(organizacion.username));
-            logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(organizacion.doctor.length));
-            res.status(200).json(organizacion.doctor);
+            logger(chalk.blue("organizacion: ") + chalk.green(doctor[0].organizacion));
+            logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(doctor.length));
+            res.status(200).json(doctor);
           }
-        }).populate('doctor');
+        }).populate('especialidad')
       } else {
         res.send(
           "NO ES EL USUARIO   " +
