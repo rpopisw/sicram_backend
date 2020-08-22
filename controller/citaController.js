@@ -6,7 +6,7 @@ var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var optk = require("../tools/opentok");
 const chalk = require("chalk");
-const winston = require("winston");
+const loggerwin = require('../utils/logger_winston.js')
 const logger = console.log;
 //generar nueva citas
 exports.GenerarNuevaCita = async function (req, res) {
@@ -149,6 +149,7 @@ exports.GenerarNuevaCita = async function (req, res) {
     }
   } catch (err) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
+    loggerwin.info(err);
     logger(chalk.green(req.body._iddoctor));
     res.status(400).json({ msg: "Codigo Doctor no encontrado" });
   }
@@ -190,6 +191,7 @@ exports.Obtener_Citas_Paciente = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
@@ -272,6 +274,7 @@ exports.Actualizar_Citas = async function (req, res) {
                   //guardamos nueva cita con su doctor y su usuario respectivo
                   await nuevacita.save(function (err) {
                     if (err) {
+                      loggerwin.info(err);
                       return res.json({
                         success: false,
                         msg: "Error al guardar la cita",
@@ -325,9 +328,11 @@ exports.Actualizar_Citas = async function (req, res) {
           );
       }
     } else {
+      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     console.log("ERROR  " + err);
   }
 };
@@ -385,6 +390,7 @@ exports.Eliminar_cita = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
@@ -424,6 +430,7 @@ exports.Eliminar_cita_prueba = async function (req, res) {
       }
     });
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
