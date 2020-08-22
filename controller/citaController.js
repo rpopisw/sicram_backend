@@ -6,6 +6,7 @@ var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var optk = require("../tools/opentok");
 const chalk = require("chalk");
+const winston = require("winston");
 const logger = console.log;
 //generar nueva citas
 exports.GenerarNuevaCita = async function (req, res) {
