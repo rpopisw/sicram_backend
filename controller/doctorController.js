@@ -243,8 +243,10 @@ exports.Agregar_horario_doctor = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
+        //encontramos doctor
         var doctor = await Doctor.findById(req.user.id);
         logger(chalk.blue("Doctor:") + chalk.green(doctor));
+        //confirmando que este horario ya existe
         var horarioEncontrado = await Horario.findOne({
           fecha: req.body.fecha,
           hora_inicio: req.body.hora_inicio,
@@ -525,3 +527,15 @@ getToken = function (headers) {
     return null;
   }
 };
+
+
+/*---------------para la prueba-------------------*/
+exports.listar = async function (req, res) {
+  try {
+    await Doctor.find((err, doctores) => {
+      res.json(doctores)
+    })
+  } catch (error) {
+    console.log(chalk.red("Error: "+ error))
+  }
+}

@@ -39,5 +39,9 @@ router.get('/doctor/receta/datos/:id',passport.authenticate('doctor', { session:
 router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),doctorController.Crear_Nueva_Receta)
 
 
+
+//para la prueba
+router.get('/doctor/listar',doctorController.listar)
+
 module.exports = router;
  
