@@ -1,6 +1,7 @@
 var express = require('express');
 //const { scrapeProduct } = require('../../tools/scrapers');
 const router = express.Router();
+const loggerwin = require('../../utils/logger_winston.js')
 var pup= require('../../tools/scrapers');
 
 router.post('/buscar-cmp' , async(req, res)=>{
@@ -23,7 +24,7 @@ router.get('/nota/:id', async(req, res) => {
     try {
       const notaDB = await _id; 
       const respuesta = await  pup.scrapeProduct('https://200.48.13.39/cmp/php/detallexmedico.php?id='+notaDB);
-      
+      loggerwin.info('Correcto');
       res.json(respuesta);
     } catch (error) {
       return res.status(400).json({

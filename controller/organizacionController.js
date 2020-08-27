@@ -7,6 +7,7 @@ var pup = require("../tools/scrapers");
 var Doctor = require("../models/doctor")
 var Especialidad = require("../models/especialidad")
 var Horario = require("../models/horario")
+const loggerwin = require('../utils/logger_winston.js')
 
 const chalk = require("chalk");
 const logger = console.log;
@@ -39,6 +40,7 @@ exports.SignupOrganizacion = async function (req, res) {
             });
             await newOrg.save(function (error, newOrga) {
               if (error) {
+                loggerwin.info("usuario ya existe");
                 logger(chalk.red("Username en uso"));
                 return res.json({ success: false, msg: "Username ya existe." });
               }
@@ -52,6 +54,7 @@ exports.SignupOrganizacion = async function (req, res) {
       );
     }
   } catch (e) {
+    loggerwin.info(e);
     logger(chalk.red("ERROR:  ") + chalk.white(e));
   }
 };
@@ -84,6 +87,7 @@ exports.SigninOrganizacion = function (req, res) {
             // retornamos la informacion incluyendo el token como json
             res.json({ success: true, id: org._id, token: "Bearer " + token });
           } else {
+            loggerwin.info("LA AUTENTICACION FALLO PASSWORD INCORRECTO ");
             res.status(401).send({
               success: false,
               msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
@@ -126,6 +130,7 @@ exports.Obtener_Datos_Organizacion = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
@@ -180,6 +185,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERRROR: ")  + chalk.white(err));
   }
 };
@@ -303,6 +309,7 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
   }
   
   }catch (e) {
+    loggerwin.info(e);
     logger(chalk.red("ERR  ") + chalk.white(e));
   }
 }
@@ -343,6 +350,7 @@ exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
         return res.status(403).send({ success: false, msg: "Unauthorized." });
       }
   }catch (e) {
+    loggerwin.info(e);
     logger(chalk.red("ERR  ") + chalk.white(e));
   }
 }
@@ -436,6 +444,7 @@ exports.Asignar_Horario_Medicos = async function (req, res) {
         return res.status(403).send({ success: false, msg: "Unauthorized." });
       }
   }catch (error) {
+    loggerwin.info(error);
     logger(chalk.red("ERROR: ") + chalk.white(error));
   }
 }

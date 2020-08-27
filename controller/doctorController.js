@@ -10,6 +10,7 @@ var Cita = require("../models/cita");
 var User = require("../models/user");
 var Receta = require("../models/receta");
 const chalk = require("chalk");
+const loggerwin = require('../utils/logger_winston.js')
 const logger = console.log;
 
 //registro doctor
@@ -92,6 +93,7 @@ exports.SignupDoctor = async function (req, res) {
             }
           }
         } catch (e) {
+          loggerwin.info('El usuario ingreso un cmp incorrecto ');
           return res.status(400).json({
             msg: "CMP INCORRECTO",
           });
@@ -110,6 +112,7 @@ exports.SigninDoctor = async function (req, res) {
     },
     function (erro, doctor) {
       if (!doctor) {
+        loggerwin.info('El auntenticacion del usuario fallo');
         res.status(401).send({
           success: false,
           msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
@@ -132,6 +135,7 @@ exports.SigninDoctor = async function (req, res) {
               token: "Bearer " + token,
             });
           } else {
+            loggerwin.info('El auntenticacion del usuario fallo : password incorrecto');
             res.status(401).send({
               success: false,
               msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
@@ -179,6 +183,7 @@ exports.Obtener_datos_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (error) {
+    loggerwin.info('No se pudo obtener los datos del doctor.');
     logger(chalk.red("ERROR:  ") + chalk.white(error));
   }
 };
@@ -188,6 +193,7 @@ exports.Obtener_horario_doctor = async function (req, res) {
     var doctor = await Doctor.findById(req.params.id).populate("horario");
     res.json(doctor.horario);
   } catch (error) {
+    loggerwin.info('id incorrecto, no se encontro doctor');
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
 };
@@ -231,9 +237,11 @@ exports.Actualizar_datos_doctor = async function (req, res) {
         );
       }
     } else {
+      loggerwin.info('usuario no autorizado');
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR:") + chalk.white(err));
   }
 };
@@ -299,6 +307,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
     throw err;
   }
@@ -346,6 +355,8 @@ exports.Cambiar_estado_citas = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+
+    loggerwin.info(err);
     logger(chalk.red("ERROR")+chalk.white(err));
     
     throw err;
@@ -386,9 +397,11 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
         );
       }
     } else {
-      return res.status(403).send({ success: false, msg: "Unauthorized." });
+      
+     return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
 };
@@ -456,6 +469,7 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
 };

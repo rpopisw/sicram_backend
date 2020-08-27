@@ -4,7 +4,7 @@ var Doctor = require("../models/doctor");
 var Cita = require("../models/cita");
 var Horario = require("../models/horario");
 var Especialidad = require("../models/especialidad");
-
+const loggerwin = require('../utils/logger_winston.js')
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -104,9 +104,11 @@ exports.Obtener_Dependientes = async function (req, res) {
         );
       }
     } else {
+      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     console.log("ERROR  " + err);
   }
 };
@@ -213,6 +215,7 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
@@ -226,9 +229,11 @@ exports.Obtener_citas_dependiente = async function (req, res) {
       );
       res.json(dependiente.cita);
     } else {
+      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR  " )+ chalk.white(err));
   }
 };

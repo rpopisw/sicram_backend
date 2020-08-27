@@ -4,12 +4,14 @@ require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var User = require("../models/user");
 const chalk = require("chalk");
+const loggerwin = require('../utils/logger_winston.js')
 const logger = console.log;
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
   try {
     if (!req.body.username || !req.body.password || !req.body.email) {
+      loggerwin.info("El usuario no ingreso email y contraseña");
       res.json({ success: false, msg: "Por favor, ponga email y contraseña" });
     } else {
       await User.findOne({ email: req.body.email }, async (erro, user) => {
@@ -32,6 +34,7 @@ exports.SignupUsuario = async function (req, res) {
           // guardamos usuario registrado
           await newUser.save(function (err) {
             if (err) {
+              loggerwin.info("Username ya existe.");
               return res.json({ success: false, msg: "Username ya existe." });
             }
             res.json({ success: true, msg: "Exito nuevo usuario creado." });
@@ -40,6 +43,7 @@ exports.SignupUsuario = async function (req, res) {
       });
     }
   } catch (err) {
+    loggerwin.info(err);
     console.log("ERR  " + err);
   }
 };
@@ -51,6 +55,7 @@ exports.SingninUsuario = function (req, res) {
     },
     function (err, user) {
       if (!user) {
+        loggerwin.info("Autenticación de usuario fallida");
         logger(chalk.red("Autenticación de usuario fallida"));
         res
           .status(401)
@@ -72,6 +77,7 @@ exports.SingninUsuario = function (req, res) {
             // retornamos la informacion incluyendo el token como json
             res.json({ success: true, id: user._id, token: "Bearer " + token });
           } else {
+            loggerwin.info("LA AUTENTICACION FALLO PASSWORD INCORRECTO ");
             res
               .status(401)
               .send({
@@ -88,6 +94,7 @@ exports.SingninUsuario = function (req, res) {
 exports.SignoutUsuario = function (req, res) {
   req.logout();
   logger(chalk.blue("Login exitoso"));
+  loggerwin.info("Sign out Exitosa.");
   res.json({ success: true, msg: "Sign out Exitosa." });
 };
 
@@ -115,9 +122,11 @@ exports.Obntener_datos_Paciente = async function (req, res) {
         );
       }
     } else {
+      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     console.log("ERROR  " + err);
   }
 };
@@ -168,9 +177,11 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
         );
       }
     } else {
+      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
