@@ -33,7 +33,7 @@ var url = 'https://sicramv1.herokuapp.com/api/'
 //suite
 describe('probando API',function(){
     //prueba
-    it('GET listar doctores', function(done){
+    it('GET listar especialidades', function(done){
         for (let index = 0; index <= 3; index++) {
             request.get(url+"especialidad", function(err,res,body){
                 var resultado = JSON.parse(body)

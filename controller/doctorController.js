@@ -221,7 +221,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
               }
             });
           }
-        });
+        }).populate("especialidad");
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
