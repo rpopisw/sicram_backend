@@ -187,7 +187,9 @@ exports.Obtener_datos_doctor = async function (req, res) {
     logger(chalk.red("ERROR:  ") + chalk.white(error));
   }
 };
-//
+
+
+//HOARIOS DEL DOCTOR
 exports.Obtener_horario_doctor = async function (req, res) {
   try {
     var doctor = await Doctor.findById(req.params.id).populate("horario");
@@ -196,7 +198,12 @@ exports.Obtener_horario_doctor = async function (req, res) {
     loggerwin.info('id incorrecto, no se encontro doctor');
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
-};
+}
+exports.Eliminar_horario_doctor = async function (req, res) {
+
+}
+
+
 //actualizar datos del doctor
 exports.Actualizar_datos_doctor = async function (req, res) {
   try {
@@ -311,7 +318,9 @@ exports.Agregar_horario_doctor = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
     throw err;
   }
-};
+}
+
+
 //cambiar esado de citas de pendientes a : atendido o a no atendido
 exports.Cambiar_estado_citas = async function (req, res) {
   try {

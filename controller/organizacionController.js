@@ -8,9 +8,7 @@ var Doctor = require("../models/doctor")
 var Especialidad = require("../models/especialidad")
 var Horario = require("../models/horario")
 const loggerwin = require('../utils/logger_winston.js')
-
 const chalk = require("chalk");
-const { json } = require("body-parser");
 
 const logger = console.log;
 
@@ -40,6 +38,12 @@ exports.SignupOrganizacion = async function (req, res) {
               direccion: req.body.direccion,
               ruc: req.body.ruc,
             });
+            //nueva especialidad q sera guardada en el stack de especialidades de la oganizacion
+            /*var especialidad = await Especialidad.findOne({
+               especialidad:req.body.especialidad
+            })
+            newOrg.especialidad.push(especialidad)*/
+
             await newOrg.save(function (error, newOrga) {
               if (error) {
                 loggerwin.info("usuario ya existe");
@@ -472,12 +476,25 @@ exports.Eliminar_Doctor = async function (req, res) {
                 res.status(400).json({ msg: "EL DOCTOR NO PERTENCE A LA ORGANIZACION" });
               }else{
                 logger(chalk.blue("SI PERTENECE Doctor: ") + chalk.green(doctor.username));
-                //res.status(400).json({ msg: "SI PERTENECE" });
-                //AGREGAMOS EL HORARIO DEL DOCTOR
-                doctor.mensaje('mensaje')
-                doctor.deleteOne((err,result) => {
-                  if(err) res.json({ msg:'error al eliminar '})
-                  res.json({ msg:'se elimino doctor '+result.username})
+                //encontramos la organizacion q eliminara a un doctor
+                await Organizacion.findById(req.user.id,(err,organizacion)=>{
+
+                  if (!organizacion){
+                    res.json({ msg: "NO SE ENCONTRO LA ORGANIZACION" });
+                  }else{
+                    const doctor_temp = organizacion.doctor
+                    console.log("DOCTORES DE LA ORGA: "+ doctor_temp)
+                    const index_doctor = doctor_temp.indexOf(doctor.id)
+                    console.log("INDICE"+index_doctor)
+                    doctor_temp.splice(index_doctor,1)
+  
+  
+                    doctor.organizacion = null;
+                    doctor.save()
+                    organizacion.save()
+                    res.json({ msg: "Doctor: "+doctor.username +"se elimino de la Organizacion"+ organizacion.username});
+                  }
+                  
                 })
               }
             }
@@ -508,6 +525,7 @@ exports.Eliminar_Doctor = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(error));
   }
 }
+
 //metodo para confirmar que entro un token
 getToken = function (headers) {
   if (headers && headers.authorization) {

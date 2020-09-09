@@ -88,9 +88,9 @@ DoctorSchema.pre('save', function (next) {
     }
  })
 
- DoctorSchema.pre('deleteOne', function (next) {
-    console.log('hacer ESTO antes de eliminar doctor')
-    next();
+DoctorSchema.pre('deleteOne', function (next) {
+    console.log('NO LO HACE')
+    return next();
 })
 
 DoctorSchema.pre('mensaje', function (next) {

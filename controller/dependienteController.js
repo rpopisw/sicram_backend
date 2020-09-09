@@ -4,7 +4,7 @@ var Doctor = require("../models/doctor");
 var Cita = require("../models/cita");
 var Horario = require("../models/horario");
 var Especialidad = require("../models/especialidad");
-const loggerwin = require('../utils/logger_winston.js')
+const loggerwin = require("../utils/logger_winston.js");
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -71,6 +71,58 @@ exports.Agregar_Dependiente = async function (req, res) {
     }
   } catch (err) {
     logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+
+exports.Modificar_Dependiente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //ENCONTRAMOS AL USUARIO
+        // BUSCAMOS AL DEPENDIENTE POR ID QUE NOS LLEGARÁ POR BODY
+        await Dependiente.findById(
+          req.body.id_dependiente,
+          async (err, dependiente) => {
+            if (err) {
+              res.json({
+                "Error:": err,
+              });
+            } else {
+              //dependiente.name=req.body.name;
+              //dependiente.lastname=req.body.lastname;
+                dependiente.email = req.body.email;
+                dependiente.edad = req.body.edad;
+                dependiente.discapacidad = req.body.discapacidad;
+                dependiente.celular = req.body.celular;
+                dependiente.direccion = req.body.direccion;
+
+                await dependiente.save((err, dependienteUpdate) => {
+                  if (err) {
+                    console.log("Eror",err);
+                  } else {
+                    res.json({
+                      "Dependiente actualizado: ": dependienteUpdate,
+                    });
+                  }
+                });
+                
+              //console.log("Datos del dependiente", dependiente);
+              /*res.json({
+                success: true,
+                id: dependiente._id,
+                nombre: dependiente.name,
+                token: "Bearer " + token,
+              });*/
+            }
+          }
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "  QUE FUE MANO" });
+    }
+  } catch (err) {
+    console.log("Error" + err);
   }
 };
 
@@ -234,7 +286,58 @@ exports.Obtener_citas_dependiente = async function (req, res) {
     }
   } catch (err) {
     loggerwin.info(err);
-    logger(chalk.red("ERROR  " )+ chalk.white(err));
+    logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+exports.Eliminar_Dependiente = async function(req,res){
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+
+        await User.findById(req.user.id,async (err, paciente)=>{
+          if(!paciente){
+            res.json({ msg: 'No se encontro al paciente'})
+          }else{
+            
+            await Dependiente.findById(req.body.id_dependiente,async (err,dependiente)=>{
+              if(!dependiente){
+                res.json({ msg: 'No se encontro dependiente'})
+              }else{
+                logger('dependiente: '+dependiente);
+                const nombre_dependiente = dependiente.name
+                console.log("familiares del paciente: "+ nombre_dependiente)
+                const depen_de_paciente = paciente.dependiente
+                console.log("familiares del paciente: "+ depen_de_paciente)
+                const index_dependiente_de_paciente = depen_de_paciente.indexOf(dependiente.id)
+                console.log("INDICE: "+index_dependiente_de_paciente)
+                if(index_dependiente_de_paciente == -1){
+                  res.json({ msg: "Este dependiente no existe"});
+                }else{
+                  depen_de_paciente.splice(index_dependiente_de_paciente,1);
+                  dependiente.deleteOne()
+                  paciente.save()
+                  res.json({ msg: "Se elimino al familiar: "+ nombre_dependiente});
+                }
+                
+
+              }
+            })
+          }
+
+        })
+        
+      } else {
+        logger(chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + chalk.blue("comparado con ") + chalk.magenta(req.params.id));
+        res.send("NO ES EL USUARIO   " + req.user.id +" comparando con " + req.params.id );
+      }
+    } else {
+      loggerwin.warn("Sin autorizacion");
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.error(err);
+    console.log("ERROR  " + err);
   }
 };
 

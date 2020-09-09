@@ -21,6 +21,10 @@ var HorarioSchema = new Schema({
     cita:{
         type: Schema.Types.ObjectId,
         ref: 'Cita'
+    },
+    ocupado:{
+        type:Boolean,
+        default:true
     }
 });
 
