@@ -10,6 +10,7 @@ info: Correcto
 info: Correcto {"timestamp":"2020-08-22T01:42:04.785Z"}
 info: El usuario no ingreso email y contraseña {"timestamp":"2020-08-22T02:17:03.700Z"}
 info: Correcto {"timestamp":"2020-08-29T07:13:04.864Z"}
+<<<<<<< HEAD
 info: se encontro la organizacion {"timestamp":"2020-09-09T03:41:24.300Z"}
 info: se encontro la organizacion {"timestamp":"2020-09-09T04:06:27.917Z"}
 info: se encontro la organizacion {"timestamp":"2020-09-09T05:45:48.555Z"}
@@ -20,3 +21,13 @@ info: Autenticación de usuario fallida {"timestamp":"2020-09-09T21:35:08.665Z"}
 info: Autenticación de usuario fallida {"timestamp":"2020-09-09T21:35:19.132Z"}
 info: Autenticación de usuario fallida {"timestamp":"2020-09-09T21:35:24.125Z"}
 info: Autenticación de usuario fallida {"timestamp":"2020-09-09T21:35:37.463Z"}
+=======
+info: Autenticación de usuario fallida {"timestamp":"2020-09-09T08:40:54.978Z"}
+info: name is not defined {"timestamp":"2020-09-09T18:22:52.613Z"}
+info: Schema hasn't been registered for model "lastname".
+Use mongoose.model(name, schema) {"timestamp":"2020-09-09T18:24:25.043Z"}
+info: {(intermediate value)(intermediate value)}.populate is not a function {"timestamp":"2020-09-09T18:33:12.077Z"}
+info: "doctor".populate is not a function {"timestamp":"2020-09-09T18:33:44.069Z"}
+info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-09T22:18:05.224Z"}
+info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-09T22:18:33.057Z"}
+>>>>>>> 12f8adbdd7e1ae8a8c62931ec6ba89fee2a4aff6
