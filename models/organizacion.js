@@ -68,4 +68,7 @@ OrganizacionSchema.methods.comparePassword = function (passw, cb) {
     });
 };
 
+OrganizacionSchema.pre('deleteOne', function (next){
+    console.log('antes de eliminar organizacion eliminamos referencias')
+})
 module.exports = mongoose.model('Organizacion', OrganizacionSchema);

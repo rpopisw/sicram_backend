@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
+var User = require('./user')
 
 var DoctorSchema = new Schema({
   username: {
@@ -65,6 +66,8 @@ var DoctorSchema = new Schema({
   }]
 });
 
+
+
 DoctorSchema.pre('save', function (next) {
     var doctor = this;
     if (this.isModified('password') || this.isNew) {
@@ -83,7 +86,21 @@ DoctorSchema.pre('save', function (next) {
     } else {
         return next();
     }
-});
+ })
+
+ DoctorSchema.pre('deleteOne', function (next) {
+    console.log('hacer ESTO antes de eliminar doctor')
+    next();
+})
+
+DoctorSchema.pre('mensaje', function (next) {
+    console.log('Antes')
+    next();
+})
+
+DoctorSchema.methods.mensaje=(msg)=>{
+    console.log(msg);
+}
 
 DoctorSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {

@@ -10,6 +10,8 @@ var Horario = require("../models/horario")
 const loggerwin = require('../utils/logger_winston.js')
 
 const chalk = require("chalk");
+const { json } = require("body-parser");
+
 const logger = console.log;
 
 exports.SignupOrganizacion = async function (req, res) {
@@ -432,6 +434,64 @@ exports.Asignar_Horario_Medicos = async function (req, res) {
               chalk.green(req.user.id) +
               chalk.blue("comparado con ") +
               chalk.magenta(req.params.id)
+          );
+          res.send(
+            "NO ES EL USUARIO   " +
+              req.user.id +
+              " comparando con " +
+              req.params.id
+          );
+        }
+      } else {
+        return res.status(403).send({ success: false, msg: "Unauthorized." });
+      }
+  }catch (error) {
+    loggerwin.info(error);
+    logger(chalk.red("ERROR: ") + chalk.white(error));
+  }
+}
+exports.Eliminar_Doctor = async function (req, res) {
+  try {
+    console.log(req.headers)
+    var token = getToken(req.headers);
+      if (token) {
+        if (req.user.id == req.params.id) {
+          //encontramos al doctor
+          await Doctor.findById(req.body.id_doctor,async (err,doctor) => {
+            try {
+              logger(chalk.blue("datos doctor: ") + chalk.green(doctor));
+            if (!doctor) {
+              logger(chalk.blue("msg: ")+ chalk.white("no se encontro el doctor"));
+              res.status(400).json({ msg: "no se encontro el doctor" });
+            }else{
+              //se encontro al doctor
+              logger(chalk.blue("Encontro Doctor: ") + chalk.green(doctor.lastname));
+              //condicion que el doctor pertenesca a la organizacion
+              if(doctor.organizacion!=req.user.id){
+                logger(chalk.blue("msg: ") + chalk.white("doctor: "+doctor.organizacion+" no coincide con organizacion: "+req.user.id));
+                res.status(400).json({ msg: "EL DOCTOR NO PERTENCE A LA ORGANIZACION" });
+              }else{
+                logger(chalk.blue("SI PERTENECE Doctor: ") + chalk.green(doctor.username));
+                //res.status(400).json({ msg: "SI PERTENECE" });
+                //AGREGAMOS EL HORARIO DEL DOCTOR
+                doctor.mensaje('mensaje')
+                doctor.deleteOne((err,result) => {
+                  if(err) res.json({ msg:'error al eliminar '})
+                  res.json({ msg:'se elimino doctor '+result.username})
+                })
+              }
+            }
+            } catch (error) {
+              logger(chalk.red("ERROR: ") + chalk.white(error));
+            }
+          })
+
+        } else {
+          logger(
+            chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
           );
           res.send(
             "NO ES EL USUARIO   " +

@@ -24,4 +24,8 @@ var HorarioSchema = new Schema({
     }
 });
 
+HorarioSchema.pre('deleteOne', function (next){
+    console.log('antes de eliminar horario eliminamos referencias')
+})
+
 module.exports = mongoose.model('Horario',HorarioSchema);

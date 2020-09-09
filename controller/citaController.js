@@ -9,7 +9,7 @@ const chalk = require("chalk");
 const loggerwin = require('../utils/logger_winston.js')
 const logger = console.log;
 //generar nueva citas
-exports.GenerarNuevaCita = async function (req, res) {
+exports.GenerarNuevaCita = async function (req, res) {  
   try {
     var token = getToken(req.headers);
     if (token) {
@@ -24,7 +24,8 @@ exports.GenerarNuevaCita = async function (req, res) {
           try {
             logger(chalk.green(doctor.username));
             //encontrando especialidad
-            /*var especialidad = */await Especialidad.findOne({
+            /*var especialidad = */
+            await Especialidad.findOne({
             especialidad: req.body.especialidad,
             },async(err,especialidad)=>{
               try {
