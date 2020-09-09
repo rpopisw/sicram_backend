@@ -4,7 +4,7 @@ var Doctor = require("../models/doctor");
 var Cita = require("../models/cita");
 var Horario = require("../models/horario");
 var Especialidad = require("../models/especialidad");
-const loggerwin = require('../utils/logger_winston.js')
+const loggerwin = require("../utils/logger_winston.js");
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -71,6 +71,58 @@ exports.Agregar_Dependiente = async function (req, res) {
     }
   } catch (err) {
     logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+
+exports.Modificar_Dependiente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //ENCONTRAMOS AL USUARIO
+        // BUSCAMOS AL DEPENDIENTE POR ID QUE NOS LLEGARÁ POR BODY
+        await Dependiente.findById(
+          req.body.id_dependiente,
+          async (err, dependiente) => {
+            if (err) {
+              res.json({
+                "Error:": err,
+              });
+            } else {
+              //dependiente.name=req.body.name;
+              //dependiente.lastname=req.body.lastname;
+                dependiente.email = req.body.email;
+                dependiente.edad = req.body.edad;
+                dependiente.discapacidad = req.body.discapacidad;
+                dependiente.celular = req.body.celular;
+                dependiente.direccion = req.body.direccion;
+
+                await dependiente.save((err, dependienteUpdate) => {
+                  if (err) {
+                    console.log("Eror",err);
+                  } else {
+                    res.json({
+                      "Dependiente actualizado: ": dependienteUpdate,
+                    });
+                  }
+                });
+                
+              //console.log("Datos del dependiente", dependiente);
+              /*res.json({
+                success: true,
+                id: dependiente._id,
+                nombre: dependiente.name,
+                token: "Bearer " + token,
+              });*/
+            }
+          }
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "  QUE FUE MANO" });
+    }
+  } catch (err) {
+    console.log("Error" + err);
   }
 };
 
@@ -234,7 +286,7 @@ exports.Obtener_citas_dependiente = async function (req, res) {
     }
   } catch (err) {
     loggerwin.info(err);
-    logger(chalk.red("ERROR  " )+ chalk.white(err));
+    logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
 

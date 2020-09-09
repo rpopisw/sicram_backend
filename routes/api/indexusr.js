@@ -44,6 +44,10 @@ router.post('/user/cita/eliminar_prueba',citaController.Eliminar_cita_prueba);
 //ENDPOINT PARA DEPENDIENTE-------------------------------
 //agregar nuevo dependite
 router.post('/user/dependiente/agregar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Agregar_Dependiente);
+
+//Modificar dependiente
+router.post('/user/dependiente/modificar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Modificar_Dependiente);
+
 //listar dependientes
 router.get('/user/dependiente/listar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Obtener_Dependientes);
 //ENDPOINT PARA CITA DE DEPENDIENTE
