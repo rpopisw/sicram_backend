@@ -11,7 +11,8 @@ var User = require("../models/user");
 var Receta = require("../models/receta");
 const chalk = require("chalk");
 
-const loggerwin = require('../utils/logger_winston.js')
+const loggerwin = require('../utils/logger_winston.js');
+const horario = require("../models/horario");
 const logger = console.log;
 
 //registro doctor
@@ -196,26 +197,87 @@ exports.Obtener_datos_doctor = async function (req, res) {
 //HOARIOS DEL DOCTOR
 exports.Obtener_horario_doctor = async function (req, res) {
   try {
-    var doctor = await Doctor.findById(req.params.id).populate("horario");
-    res.json(doctor.horario);
+    await Doctor.findById(req.params.id,async (err,doctor)=>{
+      
+      await Horario.find({doctor:req.params.id,ocupado:false},(err,horarios)=>{
+        if(!horarios){
+          res.json({msg:'no se encontro horarios'})
+        }
+        res.json(horarios)
+      }).populate('doctor')
+      
+    })
   } catch (error) {
     loggerwin.info("id incorrecto, no se encontro doctor");
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
 }
 exports.Eliminar_horario_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //encotramos al doctor
+        await Doctor.findById(req.params.id,async(err,doctor) => {
+          if(!doctor){
+            res.json({msg:"no se encontro doctor"})
+          }else{
+            //encontramos el horario a eliminar
+            await Horario.findOne({_id:req.body.id_horario,doctor:req.user.id},(err,horario) =>{
+              if(!horario){
+                res.json({msg:"horario no encontrado"})
+              }else{
+                logger('id horario: ' +horario.id)
+                const horarios_doctor = doctor.horario
+                logger('horarios del doctor: '+horarios_doctor)
+                logger('id doctor: '+doctor.id)
+                const indice_temp_horario = horarios_doctor.indexOf(horario.id)
+                logger('indice del Horario: '+indice_temp_horario)
+                if(indice_temp_horario==-1){
 
+                  res.json({msg:'Horario no pertenece a horarios del doctor'})
+                }else{
+                  logger('horario esta ocupado? :'+horario.ocupado)
+                  if(horario.ocupado==false){
+                    horarios_doctor.splice(indice_temp_horario,1)
+                    doctor.save()
+                    horario.deleteOne()
+                    res.json({msg:'Se elimino el horario del doctor'})
+                  }else{
+                    res.json({msg:"El horario esta siendo usado en una cita, No se puede eliminar"})
+                  }
+                  
+                }
+
+              }
+            })
+          }
+
+        })
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO    " +
+            req.user.id +
+            " username :  " +
+            req.user.username +
+            "  comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (error) {
+    loggerwin.info("No se pudo obtener los datos del doctor.");
+    logger(chalk.red("ERROR:  ") + chalk.white(error));
+  }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 //actualizar datos del doctor
@@ -227,8 +289,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
         await Doctor.findById(req.user.id, async (err, doctor) => {
           if (err) {
             logger(
-              chalk.blue("usuario no encontrado aqui el error: ") + chalk,
-              red(err)
+              chalk.blue("usuario no encontrado aqui el error: ") + chalk.red(err)
             );
           } else {
             //Buscamos la especialidad para borrar de esta al médico
@@ -356,9 +417,6 @@ exports.Agregar_horario_doctor = async function (req, res) {
 }
 
 
-
-
-
 // Actualizar el horario del doctor
 exports.Actualizar_horario_doctor = async function (req, res) {
   try {
@@ -368,24 +426,31 @@ exports.Actualizar_horario_doctor = async function (req, res) {
         await Horario.findById(req.body.horario_id, async (err, horario) => {
           if (err) {
             logger(
-              chalk.blue("Horario no encontrado error: ") + chalk,
-              red(err)
+              chalk.blue("Horario no encontrado error: ") + chalk.red(err)
             );
           } else {
-            horario.fecha = req.body.fecha;
-            horario.hora_inicio = req.body.hora_inicio;
-            horario.hora_fin = req.body.hora_fin;
-
-            await horario.save((err, horarioUpdate) => {
-              if (err) {
-                logger(chalk.red("Error al guardar"));
-                res.send("error al guardar al doctor actualizado :" + err);
-              } else {
-                res.json({
-                  "Horario actualizado: ": horarioUpdate,
+            logger('doctor del horario: '+horario.doctor._id+' es igual a: '+req.user.id)
+            if(horario.doctor._id==req.user.id){
+              if(horario.ocupado==false){
+                horario.fecha = req.body.fecha;
+                horario.hora_inicio = req.body.hora_inicio;
+                horario.hora_fin = req.body.hora_fin;
+  
+                await horario.save((err, horarioUpdate) => {
+                  if (err) {
+                    logger(chalk.red("Error al guardar"));
+                    res.json({msg:"error al guardar al doctor actualizado :" + err});
+                  } else {
+                    res.json({"horarioActualizado: ": horarioUpdate});
+                  }
                 });
-              }
-            });
+              }else{
+                res.json({msg:"El horario esta siendo usado en una cita, No se puede Modificar"})
+              }  
+            }else{
+              res.json({msg:"El Horario no pertenece al doctor"})
+            }
+            
           }
         }).populate({
           path: "doctor",

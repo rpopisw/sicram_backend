@@ -31,3 +31,4 @@ info: "doctor".populate is not a function {"timestamp":"2020-09-09T18:33:44.069Z
 info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-09T22:18:05.224Z"}
 info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-09T22:18:33.057Z"}
 >>>>>>> 12f8adbdd7e1ae8a8c62931ec6ba89fee2a4aff6
+info: El auntenticacion del usuario fallo {"timestamp":"2020-09-10T04:07:36.781Z"}

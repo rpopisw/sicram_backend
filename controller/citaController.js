@@ -29,7 +29,7 @@ exports.GenerarNuevaCita = async function (req, res) {
             especialidad: req.body.especialidad,
             },async(err,especialidad)=>{
               try {
-                        //si especialidad existe
+                    //si especialidad existe
                     if (especialidad) {
                       logger(
                         chalk.green(especialidad._id) +
@@ -56,6 +56,7 @@ exports.GenerarNuevaCita = async function (req, res) {
                             nuevacita.doctor = doctor;
                             nuevacita.especialidad = especialidad;
                             nuevacita.horario = horario;
+                            horario.ocupado = true;
                             //agregamos el token y la session a la citanueva
                             await optk.createSession(async(err, session)=>{
                               try {

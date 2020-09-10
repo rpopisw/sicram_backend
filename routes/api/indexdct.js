@@ -27,6 +27,8 @@ router.post('/doctor/horario/agregar/:id',passport.authenticate('doctor', { sess
 router.get('/doctor/horarios/:id',doctorController.Obtener_horario_doctor)
 // modificar horario del doctor
 router.post('/doctor/horario/modificar/:id',passport.authenticate('doctor', { session: false}),doctorController.Actualizar_horario_doctor)
+//eliminar hoario del doctor
+router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { session: false}),doctorController.Eliminar_horario_doctor)
 
 //CITAS DEL DOCTOR
 //listar citas del doctor

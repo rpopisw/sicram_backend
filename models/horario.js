@@ -24,7 +24,7 @@ var HorarioSchema = new Schema({
     },
     ocupado:{
         type:Boolean,
-        default:true
+        default:false
     }
 });
 
