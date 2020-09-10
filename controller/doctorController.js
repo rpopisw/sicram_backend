@@ -10,7 +10,8 @@ var Cita = require("../models/cita");
 var User = require("../models/user");
 var Receta = require("../models/receta");
 const chalk = require("chalk");
-const loggerwin = require("../utils/logger_winston.js");
+
+const loggerwin = require('../utils/logger_winston.js')
 const logger = console.log;
 
 //registro doctor
@@ -93,7 +94,7 @@ exports.SignupDoctor = async function (req, res) {
             }
           }
         } catch (e) {
-          loggerwin.info("El usuario ingreso un cmp incorrecto ");
+          loggerwin.info('El usuario ingreso un cmp incorrecto ');
           return res.status(400).json({
             msg: "CMP INCORRECTO",
           });
@@ -112,7 +113,7 @@ exports.SigninDoctor = async function (req, res) {
     },
     function (erro, doctor) {
       if (!doctor) {
-        loggerwin.info("El auntenticacion del usuario fallo");
+        loggerwin.info('El auntenticacion del usuario fallo');
         res.status(401).send({
           success: false,
           msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
@@ -123,7 +124,7 @@ exports.SigninDoctor = async function (req, res) {
         logger(chalk.blue("Password:") + chalk.green(req.body.password));
         doctor.comparePassword(req.body.password, function (err, isMatch) {
           if (isMatch && !err) {
-            logger(chalk.blue("ID:") + chalk.green(doctor.id));
+            logger(chalk.blue("ID:")+ chalk.green(doctor.id));
             // si el usuario se encuentra y la contraseña  es correcta, crea un token
             var token = jwt.sign(doctor.toJSON(), config.database.secretU, {
               expiresIn: 604800, // 1 week
@@ -135,9 +136,7 @@ exports.SigninDoctor = async function (req, res) {
               token: "Bearer " + token,
             });
           } else {
-            loggerwin.info(
-              "El auntenticacion del usuario fallo : password incorrecto"
-            );
+            loggerwin.info('El auntenticacion del usuario fallo : password incorrecto');
             res.status(401).send({
               success: false,
               msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
@@ -159,6 +158,7 @@ exports.Obtener_datos_doctor = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
+        
         var doctor = await Doctor.findById(req.params.id).populate(
           "especialidad"
         );
@@ -208,6 +208,16 @@ exports.Eliminar_horario_doctor = async function (req, res) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
 //actualizar datos del doctor
 exports.Actualizar_datos_doctor = async function (req, res) {
   try {
@@ -242,21 +252,24 @@ exports.Actualizar_datos_doctor = async function (req, res) {
             doctor.email = req.body.email;
             doctor.celular = req.body.celular;
             doctor.edad = req.body.edad;
-            doctor.especialidad = nuevaEspecialidad;
+
             await doctor.save((err, doctorUpdate) => {
               if (err) {
                 logger(chalk.red("Error al guardar"));
-                res.send("Error al guardar al doctor actualizado :" + err);
+                res.send("error al guardar al doctor actualizado :" + err);
               } else {
-                res.json({ "Doctor actualizado: ": doctorUpdate });
+                res.json(doctorUpdate);
               }
-            }); 
-            
-            
-          } 
+            });
+          }
         }).populate("especialidad");
       } else {
-        console.log("No es el usuario");
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
         res.send(
           "NO ES EL USUARIO   " +
             req.user.id +
@@ -265,11 +278,12 @@ exports.Actualizar_datos_doctor = async function (req, res) {
         );
       }
     } else {
-      loggerwin.info("usuario no autorizado");
+      loggerwin.info('usuario no autorizado');
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    console.log("Error"+err);
+    loggerwin.info(err);
+    logger(chalk.red("ERROR:") + chalk.white(err));
   }
 };
 //agregar stack de horarios
@@ -338,11 +352,12 @@ exports.Agregar_horario_doctor = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
     throw err;
   }
-<<<<<<< HEAD
+
 }
 
-=======
-};
+
+
+
 
 // Actualizar el horario del doctor
 exports.Actualizar_horario_doctor = async function (req, res) {
@@ -400,7 +415,7 @@ exports.Actualizar_horario_doctor = async function (req, res) {
     logger(chalk.red("ERROR:") + chalk.white(err));
   }
 };
->>>>>>> 12f8adbdd7e1ae8a8c62931ec6ba89fee2a4aff6
+
 
 //cambiar esado de citas de pendientes a : atendido o a no atendido
 exports.Cambiar_estado_citas = async function (req, res) {
@@ -445,9 +460,10 @@ exports.Cambiar_estado_citas = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
-    logger(chalk.red("ERROR") + chalk.white(err));
 
+    loggerwin.info(err);
+    logger(chalk.red("ERROR")+chalk.white(err));
+    
     throw err;
   }
 };
@@ -463,9 +479,7 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no encontro las cita" });
           } else {
-            logger(
-              chalk.blue("CITA ENCONTRADA: ") + chalk.magenta(citas.length)
-            );
+            logger(chalk.blue("CITA ENCONTRADA: ")+chalk.magenta(citas.length));
             res.status(200).json(citas);
           }
         })
@@ -488,96 +502,72 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
         );
       }
     } else {
-      return res.status(403).send({ success: false, msg: "Unauthorized." });
+      
+     return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
     loggerwin.info(err);
-    logger(chalk.red("ERROR: ") + chalk.white(err));
+    logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
 };
+
 
 //el obtendra los datos de la cita para colocarlas por defecto a la receta
 exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
-      if (req.user.id == req.params.id) {
+      if(req.user.id == req.params.id) {
         //Encontrando al docotor que esta haciendo la cita
-        await Doctor.findById(req.user.id, async (err, doctor) => {
+        await Doctor.findById(req.user.id,async(err,doctor)=>{
           try {
-            if (err) {
-              logger(
-                chalk.red("ERR ") + chalk.white("no se encontro el doctor")
-              );
-            } else {
-              //mensaje encontrando al doctor
-              logger(
-                chalk.blue("mensaje: ") +
-                  chalk.green("se encontro al doctor: ") +
-                  chalk.magenta(doctor.lastname)
-              );
-              //encontrando cita por ID mandado por Body
-              await Cita.findById(req.body.id_cita, async (err, cita) => {
-                try {
-                  if (err) {
-                    logger(
-                      chalk.red("ERR ") + chalk.white("no se encontro la cita")
-                    );
-                    logger(chalk.red("ERR ") + chalk.white(err));
-                    res.send({ msg: "cita no colocada" });
-                  } else {
-                    await User.findById(cita.user, async (err, paciente) => {
-                      try {
-                        await Horario.findById(cita.horario, (err, horario) => {
-                          console.log(
-                            chalk.blue("nombre del paciente de la receta: ") +
-                              chalk.yellow(paciente.username)
-                          );
-                          console.log(
-                            chalk.blue("nombre del doctor de la receta: ") +
-                              chalk.yellow(doctor.username)
-                          );
-                          res.json({
-                            receta: "OK",
-                            paciente: paciente.username,
-                            doctor: doctor.username,
-                            horario:
-                              "De " +
-                              horario.hora_inicio +
-                              " hasta " +
-                              horario.hora_fin,
-                            fecha: horario.fecha,
-                          });
-                        });
+              if (err){
+                logger(chalk.red("ERR ")+ chalk.white("no se encontro el doctor"));
+              }else{
+                //mensaje encontrando al doctor
+                logger(chalk.blue("mensaje: ")+ chalk.green("se encontro al doctor: ")+ chalk.magenta(doctor.lastname));
+                //encontrando cita por ID mandado por Body 
+                await Cita.findById(req.body.id_cita,async(err,cita)=>{
+                  try {
+                    if (err){
+                      logger(chalk.red("ERR ")+ chalk.white("no se encontro la cita"));
+                      logger(chalk.red("ERR ")+ chalk.white(err));
+                      res.send({msg:"cita no colocada"})
+                    }else{
+                      await User.findById(cita.user,async (err,paciente)=>{
+                        try {
+                          await Horario.findById(cita.horario,(err,horario)=>{
+                            console.log(chalk.blue("nombre del paciente de la receta: ")+chalk.yellow(paciente.username))
+                            console.log(chalk.blue("nombre del doctor de la receta: ")+chalk.yellow(doctor.username))
+                            res.json({receta:"OK",paciente:paciente.username,doctor:doctor.username,horario:"De "+horario.hora_inicio +" hasta "+horario.hora_fin,fecha:horario.fecha})
+                          })
                       } catch (error) {
-                        logger(chalk.red("ERROR: ") + chalk.white(error));
-                        res.send({ msg: "ERROR: " + error });
+                        logger(chalk.red("ERROR: ")+ chalk.white(error));
+                        res.send({msg:"ERROR: "+error})
                       }
-                    });
+                      })
+                    }
+                  } catch (error) {
+                    logger(chalk.red("ERROR: ")+ chalk.white(error));
+                    res.send({msg:"ERROR: "+error})
                   }
-                } catch (error) {
-                  logger(chalk.red("ERROR: ") + chalk.white(error));
-                  res.send({ msg: "ERROR: " + error });
-                }
-              });
-            }
+                })
+              }
           } catch (error) {
-            logger(chalk.red("ERROR: ") + chalk.white(error));
-            res.send({ msg: "ERROR: " + error });
+            logger(chalk.red("ERROR: ")+ chalk.white(error));
+            res.send({msg:"ERROR: "+error})
           }
-        });
-      } else {
+          
+        })
+
+      }else{
         logger(
-          chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+        chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + 
+        chalk.blue("comparado con ") + chalk.magenta(req.params.id)
         );
         res.send(
-          "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+            "NO ES EL USUARIO   " + req.user.id +
+            " comparando con " + req.params.id
         );
       }
     } else {
@@ -585,15 +575,15 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
     }
   } catch (err) {
     loggerwin.info(err);
-    logger(chalk.red("ERROR: ") + chalk.white(err));
+    logger(chalk.red("ERROR: ")+ chalk.white(err));
   }
 };
 //creacion de la receta
-exports.Crear_Nueva_Receta = async function (req, res) {
+exports.Crear_Nueva_Receta = async function(req, res){
   try {
     var token = getToken(req.headers);
     if (token) {
-      if (req.user.id == req.params.id) {
+      if(req.user.id == req.params.id) {
         //generando nueva receta
         var receta = new Receta({
           medicina: req.body.medicina,
@@ -601,13 +591,13 @@ exports.Crear_Nueva_Receta = async function (req, res) {
           nombredoctor: req.body.nombredoctor,
           nombrepaciente: req.body.nombrepaciente,
           horario: req.body.horario,
-          fecha: req.body.fecha,
+          fecha: req.body.fecha
         });
-        await Cita.findById(req.body.id_cita, async (err, cita) => {
+        await Cita.findById(req.body.id_cita,async(err,cita)=>{
           try {
-            if (err) {
-              logger(chalk.red("ERR ") + chalk.white("no se encontro la Cita"));
-            } else {
+            if(err){
+              logger(chalk.red("ERR ")+ chalk.white("no se encontro la Cita"));
+            }else{
               //guardamos la receta en la cita
               cita.receta = receta;
               //guardamos la cita en la receta
@@ -615,34 +605,32 @@ exports.Crear_Nueva_Receta = async function (req, res) {
               //save
               await cita.save();
               await receta.save();
-              res.send({ msg: "receta creada" });
+              res.send({msg:"receta creada"})
             }
           } catch (error) {
-            logger(chalk.red("ERROR: ") + chalk.white(error));
-            res.send({ msg: "ERROR: " + error });
+            logger(chalk.red("ERROR: ")+ chalk.white(error));
+            res.send({msg:"ERROR: "+error})
           }
-        });
-      } else {
+          
+        })
+
+      }else{
         logger(
-          chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+        chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + 
+        chalk.blue("comparado con ") + chalk.magenta(req.params.id)
         );
         res.send(
-          "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+            "NO ES EL USUARIO   " + req.user.id +
+            " comparando con " + req.params.id
         );
       }
     } else {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    logger(chalk.red("ERROR: ") + chalk.white(err));
-    res.send({ msg: "ERROR: " + err });
-  }
+    logger(chalk.red("ERROR: ")+ chalk.white(err));
+    res.send({msg:"ERROR: "+err})
+  } 
 };
 
 getToken = function (headers) {
@@ -659,13 +647,14 @@ getToken = function (headers) {
   }
 };
 
+
 /*---------------para la prueba-------------------*/
 exports.listar = async function (req, res) {
   try {
     await Doctor.find((err, doctores) => {
-      res.json(doctores);
-    });
+      res.json(doctores)
+    })
   } catch (error) {
-    console.log(chalk.red("Error: " + error));
+    console.log(chalk.red("Error: "+ error))
   }
-};
+}
