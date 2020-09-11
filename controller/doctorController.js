@@ -332,7 +332,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
               especialidadEncontrada.doctor.splice(indice, 1);
               // Guardamos los cambios y se actualiza con un doctor menos
               await especialidadEncontrada.save();
-              doctor.especialidad=nuevaEspecialidad;
+              doctor.especialidad = nuevaEspecialidad;
               //En la nueva especialidad pusheamos al doctor
               nuevaEspecialidad.doctor.push(doctor);
               await nuevaEspecialidad.save();
@@ -348,7 +348,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
                 logger(chalk.red("Error al guardar"));
                 res.send("error al guardar al doctor actualizado :" + err);
               } else {
-                res.json({"Doctor actualizado: ": doctorUpdate});
+                res.json({ "Doctor actualizado: ": doctorUpdate });
               }
             });
           }
@@ -456,36 +456,47 @@ exports.Actualizar_horario_doctor = async function (req, res) {
               chalk.blue("Horario no encontrado error: ") + chalk.red(err)
             );
           } else {
+            //horario encontrado es la coincidencia con el horario que recién están introduciendo, esto sirve para que no hayan 2 horarios con la misma hora así tengan diferentes ids
+            var horarioEncontrado = await Horario.findOne({
+              fecha: req.body.fecha,
+              hora_inicio: req.body.hora_inicio,
+              hora_fin: req.body.hora_fin
+            });
             logger(
               "doctor del horario: " +
                 horario.doctor._id +
                 " es igual a: " +
                 req.user.id
             );
-            if (horario.doctor._id == req.user.id) {
-              if (horario.ocupado == false) {
-                horario.fecha = req.body.fecha;
-                horario.hora_inicio = req.body.hora_inicio;
-                horario.hora_fin = req.body.hora_fin;
 
-                await horario.save((err, horarioUpdate) => {
-                  if (err) {
-                    logger(chalk.red("Error al guardar"));
-                    res.json({
-                      msg: "error al guardar al doctor actualizado :" + err,
-                    });
-                  } else {
-                    res.json({msg: "Horario actualizado! "});
-                  }
-                });
+            if (!horarioEncontrado) {
+              if (horario.doctor._id == req.user.id) {
+                if (horario.ocupado == false) {
+                  horario.fecha = req.body.fecha;
+                  horario.hora_inicio = req.body.hora_inicio;
+                  horario.hora_fin = req.body.hora_fin;
+
+                  await horario.save((err, horarioUpdate) => {
+                    if (err) {
+                      logger(chalk.red("Error al guardar"));
+                      res.json({
+                        msg: "error al guardar al doctor actualizado :" + err,
+                      });
+                    } else {
+                      res.json({ msg: "Horario actualizado! " });
+                    }
+                  });
+                } else {
+                  res.json({
+                    msg:
+                      "El horario esta siendo usado en una cita, No se puede Modificar",
+                  });
+                }
               } else {
-                res.json({
-                  msg:
-                    "El horario esta siendo usado en una cita, No se puede Modificar",
-                });
+                res.json({ msg: "El Horario no pertenece al doctor" });
               }
-            } else {
-              res.json({ msg: "El Horario no pertenece al doctor" });
+            }else{
+              res.json({msg:"Este horario ya existe, elige otro"});
             }
           }
         }).populate({
