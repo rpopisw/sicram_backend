@@ -348,7 +348,10 @@ exports.Actualizar_datos_doctor = async function (req, res) {
                 logger(chalk.red("Error al guardar"));
                 res.send("error al guardar al doctor actualizado :" + err);
               } else {
-                res.json({ "Doctor actualizado: ": doctorUpdate });
+                res.json({
+                  msg: "Doctor actualizado!",
+                  doctor: doctorUpdate,
+                });
               }
             });
           }
@@ -460,7 +463,7 @@ exports.Actualizar_horario_doctor = async function (req, res) {
             var horarioEncontrado = await Horario.findOne({
               fecha: req.body.fecha,
               hora_inicio: req.body.hora_inicio,
-              hora_fin: req.body.hora_fin
+              hora_fin: req.body.hora_fin,
             });
             logger(
               "doctor del horario: " +
@@ -495,8 +498,8 @@ exports.Actualizar_horario_doctor = async function (req, res) {
               } else {
                 res.json({ msg: "El Horario no pertenece al doctor" });
               }
-            }else{
-              res.json({msg:"Este horario ya existe, elige otro"});
+            } else {
+              res.json({ msg: "Este horario ya existe, elige otro" });
             }
           }
         }).populate({

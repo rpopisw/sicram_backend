@@ -160,6 +160,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
             //DATOS A ACTUALIZAR---------------------------
             org.email = req.body.email;
             org.nameOrg = req.body.nameOrg;
+            org.direccion=req.body.direccion;
             //--------------------------------------------
             await org.save((err, orgUpdate) => {
               if (err) {
@@ -333,9 +334,9 @@ exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
             res.status(401).json({ msg: "ERR: "+err });
           }else{
             //ahora enviamos el docotor
-            logger(chalk.blue("organizacion: ") + chalk.green(doctor[0].organizacion));
+            
             logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(doctor.length));
-            res.status(200).json(doctor);
+            res.json(doctor);
           }
         }).populate('especialidad')
       } else {
@@ -492,7 +493,7 @@ exports.Eliminar_Doctor = async function (req, res) {
                     doctor.organizacion = null;
                     doctor.save()
                     organizacion.save()
-                    res.json({ msg: "Doctor: "+doctor.username +"se elimino de la Organizacion"+ organizacion.username});
+                    res.json({ msg: "Doctor eliminado"});
                   }
                   
                 })
