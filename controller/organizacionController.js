@@ -469,6 +469,10 @@ exports.Eliminar_Doctor = async function (req, res) {
               logger(chalk.blue("msg: ")+ chalk.white("no se encontro el doctor"));
               res.status(400).json({ msg: "no se encontro el doctor" });
             }else{
+
+              if(doctor.cita.length>0){
+                res.json({msg: "No puede eliminar un doctor con citas"});
+              }
               //se encontro al doctor
               logger(chalk.blue("Encontro Doctor: ") + chalk.green(doctor.lastname));
               //condicion que el doctor pertenesca a la organizacion
