@@ -101,9 +101,7 @@ exports.Modificar_Dependiente = async function (req, res) {
                   if (err) {
                     console.log("Eror",err);
                   } else {
-                    res.json({
-                      "Dependiente actualizado: ": dependienteUpdate,
-                    });
+                    res.json({msg:dependienteUpdate});
                   }
                 });
                 
