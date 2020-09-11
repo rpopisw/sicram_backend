@@ -60,7 +60,7 @@ router.get('/user/dependiente/citas/:id',dependienteCotroller.Obtener_citas_depe
 
 //ENDPOINTS PARA ESPECIALIDAD---------------------------------
 //cargar las primeras especialidades a la base de datos
-router.get('/cargarespecialidad',especialidadController.Cargar_Especialidades);
+router.post('/cargarespecialidad',especialidadController.Cargar_Especialidades);
 //obtener las especialidades
 router.get('/especialidad',especialidadController.Obtener_Especialidades);
 //obtener especialidades por doctor
