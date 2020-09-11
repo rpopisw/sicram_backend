@@ -457,7 +457,7 @@ exports.Actualizar_horario_doctor = async function (req, res) {
                       msg: "error al guardar al doctor actualizado :" + err,
                     });
                   } else {
-                    res.json({msg:horarioUpdate});
+                    res.json({msg: "Horario actualizado! "});
                   }
                 });
               } else {

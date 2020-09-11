@@ -101,7 +101,7 @@ exports.Modificar_Dependiente = async function (req, res) {
                   if (err) {
                     console.log("Eror",err);
                   } else {
-                    res.json({msg:dependienteUpdate});
+                    res.json({msg: "Familiar actualizado."});
                   }
                 });
                 
