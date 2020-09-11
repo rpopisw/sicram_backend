@@ -160,6 +160,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
             //DATOS A ACTUALIZAR---------------------------
             org.email = req.body.email;
             org.nameOrg = req.body.nameOrg;
+            org.direccion=req.body.direccion;
             //--------------------------------------------
             await org.save((err, orgUpdate) => {
               if (err) {
