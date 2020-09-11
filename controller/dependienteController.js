@@ -213,6 +213,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
                     });
                   } else {
                     logger(chalk.blue("HORARIO: ") + chalk.green(horario));
+                    //horario estara ocupado
+                    horario.ocupado = true;
                     //agregando el doctor y el usuario a la nueva cita
                     nuevacita.user = paciente;
                     nuevacita.doctor = doctor;

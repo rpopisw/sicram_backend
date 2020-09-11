@@ -51,12 +51,14 @@ exports.GenerarNuevaCita = async function (req, res) {
                             res.json({ msg: "HORARIO YA ESTA USADO ", cita: horario.cita });
                           } else {
                             logger(chalk.blue("HORARIO: ") + chalk.green(horario));
+                            //horario estara ocupado
+                            horario.ocupado = true;
                             //agregando el doctor y el usuario a la nueva cita
                             nuevacita.user = paciente;
                             nuevacita.doctor = doctor;
                             nuevacita.especialidad = especialidad;
                             nuevacita.horario = horario;
-                            horario.ocupado = true;
+                            
                             //agregamos el token y la session a la citanueva
                             await optk.createSession(async(err, session)=>{
                               try {
@@ -230,6 +232,9 @@ exports.Actualizar_Citas = async function (req, res) {
               { $set: { cita: doctor_cita_tmp } }
             );
 
+            paciente.save()
+            doctor.save()
+
             await cita.remove();
 
             logger(chalk.blue("Obteniendo del body") + chalk.green(req.body));
@@ -242,7 +247,7 @@ exports.Actualizar_Citas = async function (req, res) {
                 chalk.green(paciente.username)
             );
             //econtrando al doctor por parametro
-            var doctor2 = await Doctor.findById(req.body._iddoctor); //deberia ser metido por parametro
+            var doctor2 = await Doctor.findById(req.body._iddoctor); 
             logger(
               chalk.blue("Username del médico") + chalk.green(doctor.username)
             );
@@ -359,19 +364,31 @@ exports.Eliminar_cita = async function (req, res) {
               { $set: { cita: pacientes_cita_tmp } }
             );
 
-            const doctor = await Doctor.findOne({ _id: req.body.id_doctor });
+            const doctor = await Doctor.findOne({ _id: cita.doctor });
             const doctor_cita_tmp = doctor.cita;
             const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id_cita);
             doctor_cita_tmp.splice(find_index_doctor, 1);
-
+            
+            //desocupando horario de cita eliminada
+            const horario = await Horario.findOne({ cita: cita._id})
+            
+            logger('horario ocupado: '+horario.ocupado)
+            await horario.updateOne(
+              { cita: cita._id },
+              { $set: { ocupado: false } }
+            );
+            logger('se elimina la cita LUEGO')
+            logger('horario ocupado: '+horario.ocupado)
             await doctor.updateOne(
-              { _id: req.body.id_doctor },
+              { _id: cita.doctor },
               { $set: { cita: doctor_cita_tmp } }
             );
 
             await cita.remove();
-
-            res.json({ msg: "cita eliminada" });
+            paciente.save()
+            doctor.save()
+            horario.save()
+            res.json({ msg: "cita eliminada" ,horario:horario,doctor:doctor,paciente:paciente});
           }
         });
       } else {
