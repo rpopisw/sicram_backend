@@ -371,7 +371,8 @@ exports.Eliminar_cita = async function (req, res) {
             
             logger('horario ocupado: '+horario.ocupado)
             horario.ocupado = false
-            horario.save()
+            horario.cita=null;
+            horario.save();
             logger('se elimina la cita LUEGO')
             logger('horario ocupado: '+horario.ocupado)
             await doctor.updateOne(

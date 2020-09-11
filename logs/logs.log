@@ -34,3 +34,4 @@ info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"20
 info: El auntenticacion del usuario fallo {"timestamp":"2020-09-10T04:07:36.781Z"}
 info: Options must be an object, got "12:00" {"timestamp":"2020-09-11T06:40:34.719Z"}
 info: Options must be an object, got "11:00" {"timestamp":"2020-09-11T06:45:52.514Z"}
+info: Autenticación de usuario fallida {"timestamp":"2020-09-11T17:28:31.165Z"}
