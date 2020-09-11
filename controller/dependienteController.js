@@ -91,20 +91,20 @@ exports.Modificar_Dependiente = async function (req, res) {
             } else {
               //dependiente.name=req.body.name;
               //dependiente.lastname=req.body.lastname;
-                dependiente.email = req.body.email;
-                dependiente.edad = req.body.edad;
-                dependiente.discapacidad = req.body.discapacidad;
-                dependiente.celular = req.body.celular;
-                dependiente.direccion = req.body.direccion;
+              dependiente.email = req.body.email;
+              dependiente.edad = req.body.edad;
+              dependiente.discapacidad = req.body.discapacidad;
+              dependiente.celular = req.body.celular;
+              dependiente.direccion = req.body.direccion;
 
-                await dependiente.save((err, dependienteUpdate) => {
-                  if (err) {
-                    console.log("Eror",err);
-                  } else {
-                    res.json({msg: "Familiar actualizado."});
-                  }
-                });
-                
+              await dependiente.save((err, dependienteUpdate) => {
+                if (err) {
+                  console.log("Eror", err);
+                } else {
+                  res.json({ msg: "Familiar actualizado." });
+                }
+              });
+
               //console.log("Datos del dependiente", dependiente);
               /*res.json({
                 success: true,
@@ -289,47 +289,71 @@ exports.Obtener_citas_dependiente = async function (req, res) {
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
-exports.Eliminar_Dependiente = async function(req,res){
+exports.Eliminar_Dependiente = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-
-        await User.findById(req.user.id,async (err, paciente)=>{
-          if(!paciente){
-            res.json({ msg: 'No se encontro al paciente'})
-          }else{
-            
-            await Dependiente.findById(req.body.id_dependiente,async (err,dependiente)=>{
-              if(!dependiente){
-                res.json({ msg: 'No se encontro dependiente'})
-              }else{
-                logger('dependiente: '+dependiente);
-                const nombre_dependiente = dependiente.name
-                console.log("familiares del paciente: "+ nombre_dependiente)
-                const depen_de_paciente = paciente.dependiente
-                console.log("familiares del paciente: "+ depen_de_paciente)
-                const index_dependiente_de_paciente = depen_de_paciente.indexOf(dependiente.id)
-                console.log("INDICE: "+index_dependiente_de_paciente)
-                if(index_dependiente_de_paciente == -1){
-                  res.json({ msg: "Este dependiente no existe"});
-                }else{
-                  depen_de_paciente.splice(index_dependiente_de_paciente,1);
-                  dependiente.deleteOne()
-                  paciente.save()
-                  res.json({ msg: "Se elimino al familiar: "+ nombre_dependiente});
+        await User.findById(req.user.id, async (err, paciente) => {
+          if (!paciente) {
+            res.json({ msg: "No se encontro al paciente" });
+          } else {
+            await Dependiente.findById(
+              req.body.id_dependiente,
+              async (err, dependiente) => {
+                if (!dependiente) {
+                  res.json({ msg: "No se encontro dependiente" });
+                } else {
+                  if (dependiente.cita.length>0) {
+                    res.json({
+                      msg: "No puede eliminar un dependiente con citas",
+                    });
+                  } else {
+                    logger("dependiente: " + dependiente);
+                    const nombre_dependiente = dependiente.name;
+                    console.log(
+                      "familiares del paciente: " + nombre_dependiente
+                    );
+                    const depen_de_paciente = paciente.dependiente;
+                    console.log(
+                      "familiares del paciente: " + depen_de_paciente
+                    );
+                    const index_dependiente_de_paciente = depen_de_paciente.indexOf(
+                      dependiente.id
+                    );
+                    console.log("INDICE: " + index_dependiente_de_paciente);
+                    if (index_dependiente_de_paciente == -1) {
+                      res.json({ msg: "Este dependiente no existe" });
+                    } else {
+                      depen_de_paciente.splice(
+                        index_dependiente_de_paciente,
+                        1
+                      );
+                      dependiente.deleteOne();
+                      paciente.save();
+                      res.json({
+                        msg: "Se elimino al familiar: " + nombre_dependiente,
+                      });
+                    }
+                  }
                 }
-                
-
               }
-            })
+            );
           }
-
-        })
-        
+        });
       } else {
-        logger(chalk.blue("NO es el usuario ") + chalk.green(req.user.id) + chalk.blue("comparado con ") + chalk.magenta(req.params.id));
-        res.send("NO ES EL USUARIO   " + req.user.id +" comparando con " + req.params.id );
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
       }
     } else {
       loggerwin.warn("Sin autorizacion");
