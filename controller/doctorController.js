@@ -348,7 +348,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
                 logger(chalk.red("Error al guardar"));
                 res.send("error al guardar al doctor actualizado :" + err);
               } else {
-                res.json({ "Doctor actualizado: ": doctorUpdate });
+                res.json({msg: "Doctor actualizado: "+ doctorUpdate });
               }
             });
           }
