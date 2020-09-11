@@ -213,6 +213,24 @@ exports.Obtener_horario_doctor = async function (req, res) {
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
 };
+exports.Obtener_horarios_ocupados_doctor = async function (req, res) {
+  try {
+    await Doctor.findById(req.params.id, async (err, doctor) => {
+      await Horario.find(
+        { doctor: req.params.id, ocupado: true },
+        (err, horarios) => {
+          if (!horarios) {
+            res.json({ msg: "No se encontro horarios" });
+          }
+          res.json(horarios);
+        }
+      ).populate("doctor");
+    });
+  } catch (error) {
+    loggerwin.info("id incorrecto, no se encontro doctor");
+    res.json({ msg: "id incorrecto, no se encontro doctor" });
+  }
+};
 exports.Eliminar_horario_doctor = async function (req, res) {
   try {
     var token = getToken(req.headers);
