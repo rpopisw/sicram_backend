@@ -334,9 +334,9 @@ exports.Obtener_Doctores_De_Organizacion = async function (req, res) {
             res.status(401).json({ msg: "ERR: "+err });
           }else{
             //ahora enviamos el docotor
-            logger(chalk.blue("organizacion: ") + chalk.green(doctor[0].organizacion));
+            
             logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(doctor.length));
-            res.status(200).json(doctor);
+            res.json(doctor);
           }
         }).populate('especialidad')
       } else {
