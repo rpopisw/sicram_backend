@@ -261,7 +261,7 @@ exports.Actualizar_Citas = async function (req, res) {
                                                     res.json({ msg: "HORARIO NO COINCIDE" });
                               
                                                   }else{
-                                                    if(horario.ocupado = true){
+                                                    if(horario.ocupado == true){
                                                       logger(chalk.red("HORARIO USADO"));
                                                       res.json({ msg: "HORARIO YA ESTA USADO ", cita: horario.cita });
                                                     }else{
