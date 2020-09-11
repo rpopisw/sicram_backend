@@ -493,7 +493,7 @@ exports.Eliminar_Doctor = async function (req, res) {
                     doctor.organizacion = null;
                     doctor.save()
                     organizacion.save()
-                    res.json({ msg: "Doctor: "+doctor.username +"se elimino de la Organizacion"+ organizacion.username});
+                    res.json({ msg: "Doctor eliminado"});
                   }
                   
                 })
