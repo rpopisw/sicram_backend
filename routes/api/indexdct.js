@@ -33,8 +33,10 @@ router.post('/doctor/horario/modificar/:id',passport.authenticate('doctor', { se
 router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { session: false}),doctorController.Eliminar_horario_doctor)
 
 //CITAS DEL DOCTOR
-//listar citas del doctor
+//listar citas pendientes
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
+//listar citas atendidas
+
 //CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
 router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
 
