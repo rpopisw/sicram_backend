@@ -58,6 +58,8 @@ OrganizacionSchema.pre('save', function (next) {
     }
 });
 
+
+
 OrganizacionSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
@@ -66,6 +68,14 @@ OrganizacionSchema.methods.comparePassword = function (passw, cb) {
         console.log('entro: '+passw+' comparo con '+ this.password+' entro y ismatch' +isMatch);
         cb(null, isMatch);
     });
+};
+
+OrganizacionSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
 };
 
 OrganizacionSchema.pre('deleteOne', function (next){

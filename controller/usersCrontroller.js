@@ -3,8 +3,9 @@ var config = require("../database/key");
 require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var User = require("../models/user");
+var Cita = require("../models/cita");
 const chalk = require("chalk");
-const loggerwin = require('../utils/logger_winston.js')
+const loggerwin = require("../utils/logger_winston.js");
 const logger = console.log;
 
 //REGISTRO USUARIO
@@ -57,12 +58,10 @@ exports.SingninUsuario = function (req, res) {
       if (!user) {
         loggerwin.info("Autenticación de usuario fallida");
         logger(chalk.red("Autenticación de usuario fallida"));
-        res
-          .status(401)
-          .send({
-            success: false,
-            msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
-          });
+        res.status(401).send({
+          success: false,
+          msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
+        });
       } else {
         // check if password matches
         logger(chalk.blue("Contraseña: " + chalk.green(user.password)));
@@ -78,12 +77,10 @@ exports.SingninUsuario = function (req, res) {
             res.json({ success: true, id: user._id, token: "Bearer " + token });
           } else {
             loggerwin.info("LA AUTENTICACION FALLO PASSWORD INCORRECTO ");
-            res
-              .status(401)
-              .send({
-                success: false,
-                msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
-              });
+            res.status(401).send({
+              success: false,
+              msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
+            });
           }
         });
       }
@@ -185,6 +182,7 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
+
 
 //metodo para confirmar que entro un token
 getToken = function (headers) {

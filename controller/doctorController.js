@@ -723,34 +723,84 @@ exports.Crear_Nueva_Receta = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-        //generando nueva receta
-        var receta = new Receta({
-          medicina: req.body.medicina,
-          indicaciones: req.body.indicaciones,
-          nombredoctor: req.body.nombredoctor,
-          nombrepaciente: req.body.nombrepaciente,
-          horario: req.body.horario,
-          fecha: req.body.fecha,
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (err) {
+            res.json({ msg: "No se encontró al doctor" });
+          } else {
+            await Cita.findById(req.body.id_cita, async (err, cita) => {
+              if (err) {
+                res.json({ msg: "No se encontró la cita" });
+              } else {
+                await User.findById(cita.user, async (err, paciente) => {
+                  if (err) {
+                    res.json({ msg: "No se encontró al paciente de la cita" });
+                  } else {
+                    try {
+                      var newreceta = new Receta({
+                        nombres_apellidos:
+                          paciente.name + " " + paciente.lastname,
+                        acto_medico: req.body.acto_medico,
+                        medicamento: req.body.medicamento,
+                        concentracion: req.body.concentracion,
+                        dosis_frecuencia: req.body.dosis_frecuencia,
+                        duracion: req.body.duracion,
+                        cantidad: req.body.cantidad,
+                        fecha_expedicion: req.body.fecha_expedicion,
+                        valida_hasta: req.body.valida_hasta,
+                      });
+
+                      newreceta.cita = cita;
+                      await newreceta.save();
+
+                      cita.receta = newreceta;
+                      await cita.save();
+
+                      res.json({ msg: "Nueva receta guardada" });
+                    } catch (err) {
+                      res.json(err);
+                    }
+                  }
+                });
+              }
+            });
+          }
         });
+        /*
         await Cita.findById(req.body.id_cita, async (err, cita) => {
           try {
             if (err) {
-              logger(chalk.red("ERR ") + chalk.white("no se encontro la Cita"));
+              logger(chalk.red("ERR ") + chalk.white("no se encontro la cita"));
+              logger(chalk.red("ERR ") + chalk.white(err));
+              res.send({ msg: "cita no colocada" });
             } else {
-              //guardamos la receta en la cita
-              cita.receta = receta;
-              //guardamos la cita en la receta
-              receta.cita = cita;
-              //save
-              await cita.save();
-              await receta.save();
-              res.send({ msg: "receta creada" });
+              await User.findById(cita.user, async (err, paciente) => {
+                try {
+                  var newreceta = new Receta({
+                    nombres_apellidos: paciente.name + paciente.lastname,
+                    acto_medico: req.body.acto_medico,
+                    medicamento: req.body.medicamento,
+                    concentracion: req.body.concentracion,
+                    dosis_frecuencia: req.body.dosis_frecuencia,
+                    duracion: req.body.duracion,
+                    cantidad: req.body.cantidad,
+                    fecha_expedicion: req.body.fecha_expedicion,
+                    valida_hasta: req.body.valida_hasta,
+                    cita: cita,
+                  });
+                } catch (error) {
+                  logger(chalk.red("ERROR: ") + chalk.white(error));
+                  res.send({ msg: "ERROR: " + error });
+                }
+                cita.receta = newreceta;
+                await cita.save();
+              });
             }
           } catch (error) {
             logger(chalk.red("ERROR: ") + chalk.white(error));
             res.send({ msg: "ERROR: " + error });
           }
         });
+        */
       } else {
         logger(
           chalk.blue("NO es el usuario ") +

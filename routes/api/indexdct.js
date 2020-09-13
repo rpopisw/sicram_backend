@@ -3,6 +3,7 @@ require('../../config/userpassport')(passport);
 var express = require('express');
 var router = express.Router();
 var doctorController = require("../../controller/doctorController");
+var citaController = require('../../controller/citaController');
 const { route } = require('./indexusr');
 
 router.get('/',function (req,res) {
@@ -45,6 +46,8 @@ router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session:
 router.get('/doctor/receta/datos/:id',passport.authenticate('doctor', { session: false}),doctorController.Enviar_Datos_Nueva_Receta)
 //crear nueva receta
 router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),doctorController.Crear_Nueva_Receta)
+//ver receta que el medico receto a un paciente
+router.get('/doctor/receta/ver_receta/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_receta_doctor)
 
 
 

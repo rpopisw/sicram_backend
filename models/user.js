@@ -77,6 +77,14 @@ UserSchema.pre('save', function (next) {
     }
 });
 
+UserSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.email;
+    return userObject;
+};
+
 UserSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
