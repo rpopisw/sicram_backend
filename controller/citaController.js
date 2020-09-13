@@ -200,17 +200,14 @@ exports.Obtener_Citas_Paciente = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Cita :  ") + chalk.green(req.user.id));
-        await Cita.find(
-          { user: req.user.id, estado: "pendiente" },
-          (err, citas) => {
-            if (err) {
-              logger(chalk.red("Cita no encontrada"));
-              res.json({ msg: "no encontro las cita" });
-            } else {
-              res.status(200).json(citas);
-            }
+        await Cita.find({ user: req.user.id, estado:{$ne:'atendido'} }, (err, citas) => {
+          if (err) {
+            logger(chalk.red("Cita no encontrada"));
+            res.json({ msg: "no encontro las cita" });
+          } else {
+            res.status(200).json(citas);
           }
-        )
+        })
           .populate("horario")
           .populate("especialidad")
           .populate("doctor");
@@ -569,8 +566,8 @@ exports.Actualizar_Citas = async function (req, res) {
                     throw error;
                   }
                 });
-              }else{
-                res.json({msg: "No puede actualizar una cita atendida."});
+              } else {
+                res.json({ msg: "No puede actualizar una cita atendida." });
               }
             }
           } catch (error) {
@@ -722,17 +719,17 @@ exports.Ver_receta_paciente = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
-        await Cita.findById(req.body.id_cita, async(err, cita)=>{
-          if(err){
-            res.json({msg: "Cita no encontrada"});
-          }else{
-              await Receta.findById(cita.receta,async(err,receta)=>{
-                if(err){
-                  res.json({msg:"No se encontraron recetas para esta cita"});
-                }else{
-                  res.json(receta);
-                }
-              })
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Receta.findById(cita.receta, async (err, receta) => {
+              if (err) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                res.json(receta);
+              }
+            });
           }
         });
       } else {
@@ -763,17 +760,17 @@ exports.Ver_receta_doctor = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
-        await Cita.findById(req.body.id_cita, async(err, cita)=>{
-          if(err){
-            res.json({msg: "Cita no encontrada"});
-          }else{
-              await Receta.findById(cita.receta,async(err,receta)=>{
-                if(err){
-                  res.json({msg:"No se encontraron recetas para esta cita"});
-                }else{
-                  res.json(receta);
-                }
-              })
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Receta.findById(cita.receta, async (err, receta) => {
+              if (err) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                res.json(receta);
+              }
+            });
           }
         });
       } else {
@@ -796,6 +793,46 @@ exports.Ver_receta_doctor = async function (req, res) {
     res.json(err);
   }
 };
+
+exports.Registrar_Sintomas = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Cita.findById(req.body.id_cita, async(err,cita)=>{
+          if(err){
+            res.json({msg: "No se encontró la cita"});
+          }else{
+            cita.detalle_sintomas.sintoma=req.body.sintoma;
+            cita.detalle_sintomas.tratamiento_reciente=req.body.tratamiento_reciente;
+            cita.detalle_sintomas.alergia= req.body.alergia;
+            await cita.save();
+
+            res.json("Sintomas agregados");
+          }
+        })
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    res.json(err);
+  }
+};
+
 
 //metodo para confirmar que entro un token
 getToken = function (headers) {

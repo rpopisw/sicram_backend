@@ -1,3 +1,4 @@
+const { json } = require('body-parser');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -27,6 +28,11 @@ var CitaSchema = new Schema({
     receta:{
         type: Schema.Types.ObjectId,
         ref: 'Receta'
+    },
+    detalle_sintomas:{
+        sintoma: String,
+        tratamiento_reciente:{type: Boolean , default: false},
+        alergia:{type: Boolean, default: false}
     },
     aulaVirtual:{
         sessionId:{

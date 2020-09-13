@@ -47,6 +47,8 @@ router.post('/user/cita/eliminar_prueba',citaController.Eliminar_cita_prueba);
 //Listar receta de una cita
 router.get('/user/cita/ver_receta/:id',passport.authenticate('user', { session: false}),citaController.Ver_receta_paciente);
 
+// Agregar detalle de sintomas a una cita
+router.post('/user/cita/registrar_sintomas/:id',passport.authenticate('user', { session: false}),citaController.Registrar_Sintomas);
 
 //ENDPOINT PARA DEPENDIENTE-------------------------------
 //agregar nuevo dependite
