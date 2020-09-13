@@ -25,7 +25,8 @@ router.get('/signoutuser', passport.authenticate('user', { session: false}), use
 router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obntener_datos_Paciente);
 //actualizar los datos del usuario logeado
 router.post('/user/perfil/update/:id',passport.authenticate('user', { session: false}),userController.Actualizar_datos_Paciente);
-
+//listar recetas de una cita
+router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obntener_datos_Paciente);
 
 //ENDPOINT PARA CITA-----------------------------------
 //crear nueva cita una vez logeado
@@ -43,6 +44,8 @@ router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session:
 
 router.post('/user/cita/eliminar_prueba',citaController.Eliminar_cita_prueba);
 
+//Listar receta de una cita
+router.get('/user/cita/ver_receta/:id',passport.authenticate('user', { session: false}),citaController.Ver_receta_paciente);
 
 
 //ENDPOINT PARA DEPENDIENTE-------------------------------

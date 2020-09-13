@@ -4,6 +4,7 @@ var Cita = require("../models/cita");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
+var Receta = require("../models/receta");
 var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
@@ -712,6 +713,87 @@ exports.Eliminar_cita_prueba = async function (req, res) {
   } catch (err) {
     loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+
+exports.Ver_receta_paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async(err, cita)=>{
+          if(err){
+            res.json({msg: "Cita no encontrada"});
+          }else{
+              await Receta.findById(cita.receta,async(err,receta)=>{
+                if(err){
+                  res.json({msg:"No se encontraron recetas para esta cita"});
+                }else{
+                  res.json(receta);
+                }
+              })
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//Ver receta por parte del médico, el médico ve la receta clickeando "Receta" dentro de su historial de citas pasadas, el paciente accede a la receta desde otra ruta
+exports.Ver_receta_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async(err, cita)=>{
+          if(err){
+            res.json({msg: "Cita no encontrada"});
+          }else{
+              await Receta.findById(cita.receta,async(err,receta)=>{
+                if(err){
+                  res.json({msg:"No se encontraron recetas para esta cita"});
+                }else{
+                  res.json(receta);
+                }
+              })
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
   }
 };
 
