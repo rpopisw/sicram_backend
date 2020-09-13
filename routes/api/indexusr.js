@@ -30,8 +30,12 @@ router.post('/user/perfil/update/:id',passport.authenticate('user', { session: f
 //ENDPOINT PARA CITA-----------------------------------
 //crear nueva cita una vez logeado
 router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: false}),citaController.GenerarNuevaCita);
-//listar citas del usuario
+//listar citas pendientes del usuario
 router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
+
+//listar citas ocupadas del usuario
+router.get('/user/cita/listar_ocupadas/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Atendidas_Paciente);
+
 //elimar citas
 router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
 //actualizar citas

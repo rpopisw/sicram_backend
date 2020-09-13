@@ -102,6 +102,14 @@ DoctorSchema.methods.mensaje=(msg)=>{
     console.log(msg);
 }
 
+DoctorSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+}
+
 DoctorSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
