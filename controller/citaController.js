@@ -460,13 +460,11 @@ exports.Eliminar_cita = async function (req, res) {
 
             //desocupando horario de cita eliminada
             const horario = await Horario.findOne({ cita: cita._id });
-
-            logger("horario ocupado: " + horario.ocupado);
             horario.ocupado = false;
             horario.cita = null;
             horario.save();
             logger("se elimina la cita LUEGO");
-            logger("horario ocupado: " + horario.ocupado);
+           
             await doctor.updateOne(
               { _id: cita.doctor },
               { $set: { cita: doctor_cita_tmp } }
@@ -477,10 +475,7 @@ exports.Eliminar_cita = async function (req, res) {
             doctor.save();
 
             res.json({
-              msg: "cita eliminada",
-              horario: horario,
-              doctor: doctor,
-              paciente: paciente,
+              msg: "cita eliminada"
             });
           }
         });
