@@ -118,8 +118,11 @@ exports.GenerarNuevaCita = async function (req, res) {
                                       msg: "Exito nueva cita creada.",
                                     });
                                   });
+                                  
+                                  //notificamos al doctor
                                   mailer.notificarNuevaCita(`HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
                                   \nEN EL SIGUIENTE HORARIO:\n FECHA: ${doctor.fecha}\n HORA INICIO: ${doctor.hora_inicio}\n HORA FIN: ${doctor.hora_fin} `,doctor)
+                                  
                                   //agregamos la cita para el usuario.
                                   paciente.cita.push(nuevacita);
                                   //agregamos la cita para el doctor
@@ -493,6 +496,7 @@ exports.Actualizar_Citas = async function (req, res) {
                                                                   doctor2.cita.push(
                                                                     cita
                                                                   );
+                                                                  mailer.notificarActualizacionDeCita(doctor,doctor2,paciente)
                                                                   //guardamos al user con su cita
                                                                   await paciente.save();
                                                                   //guardamos al doctor con su cita
@@ -640,7 +644,8 @@ exports.Eliminar_cita = async function (req, res) {
               { _id: cita.doctor },
               { $set: { cita: doctor_cita_tmp } }
             );
-
+            //notificando
+            mailer.notificarEliminacionDeCita(`El paciente ${paciente.name},${paciente.lastname} \n elimino su cita \nHORARIO DE CITA ELIMINADA:\nfecha: ${horario.fecha} \nhorario:${horario.hora_inicio} - ${horario.hora_fin}`)
             await cita.remove();
             paciente.save();
             doctor.save();

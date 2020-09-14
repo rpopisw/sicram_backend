@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer')
 const mailconfig = {
     service: 'gmail',
     auth: {
-        user: 'iammiguel60@gmail.com',
-        pass: 'dmkulugvkvevhgbm'
+        user: 'sicram.empresa@gmail.com',
+        pass: 'eqfztkxxspknplgj'
     }
 }
 

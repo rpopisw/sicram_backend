@@ -38,7 +38,7 @@ exports.SignupUsuario = async function (req, res) {
             direccion: req.body.direccion,
           });
           
-          mailer.notificarRegistro(`EXITO! ${newUser.name} ${newUser.lastname} USTED ES UN NUEVO PACIENTE `,newUser)
+          mailer.notificarRegistro(`EXITO! ${newUser.name} ${newUser.lastname} \nUSTED ES UN NUEVO PACIENTE\nGRACIAS atte: SICRAM S.A.C `,newUser)
           // guardamos usuario registrado
           await newUser.save(function (err) {
             if (err) {
@@ -213,8 +213,8 @@ exports.probandomailer = function (req, res) {
   const org = new Organizacion({ email: 'miguel.ramirez7@unmsm.edu.pe' })
   console.log('email de paciente: ' + paciente.email)
   mailer.notificarRegistro(`EXITO! ${paciente.name} ${paciente.lastname} USTED ES UN NUEVO PACIENTE `,paciente)
-  mailer.notificarActualizacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
-  mailer.notificarEliminacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
+  /*mailer.notificarActualizacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
+  mailer.notificarEliminacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)*/
 
   res.json({msg:'prueba'})
 

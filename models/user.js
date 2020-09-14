@@ -103,7 +103,7 @@ UserSchema.methods.recibirMensaje = function(msg,asunto){
 
     //-----------------------
     const email_options = {
-        from: 'iammiguel60@gmail.com',
+        from: 'sicram.empresa@gmail.com',
         to: this.email,
         subject: asunto,
         text: msg
