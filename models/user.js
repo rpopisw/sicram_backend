@@ -81,7 +81,6 @@ UserSchema.methods.toJSON=function(){
     let user= this;
     let userObject = user.toObject();
     delete userObject.password;
-    delete userObject.email;
     return userObject;
 };
 
