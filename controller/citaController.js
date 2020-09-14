@@ -297,7 +297,6 @@ exports.Actualizar_Citas = async function (req, res) {
               logger(chalk.red("cita no encontrada"));
               res.json({ msg: "cita no encontrada" });
             } else {
-              logger("codigo usuario: " + cita.user);
               if ((cita.estado == "pendiente")) {
                 await User.findById(cita.user, async (err, paciente) => {
                   try {
