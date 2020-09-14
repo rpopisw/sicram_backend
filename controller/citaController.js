@@ -298,7 +298,7 @@ exports.Actualizar_Citas = async function (req, res) {
               res.json({ msg: "cita no encontrada" });
             } else {
               logger("codigo usuario: " + cita.user);
-              if ((cita.estado = "pendiente")) {
+              if ((cita.estado == "pendiente")) {
                 await User.findById(cita.user, async (err, paciente) => {
                   try {
                     if (!paciente) {
