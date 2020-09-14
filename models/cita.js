@@ -44,6 +44,5 @@ var CitaSchema = new Schema({
     }
 });
 
-CitaSchema.methods.crearCita = function(){};
 
 module.exports = mongoose.model('Cita',CitaSchema);

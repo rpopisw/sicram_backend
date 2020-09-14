@@ -38,6 +38,8 @@ router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { ses
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
 //listar citas atendidas
 
+
+
 //CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
 router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
 
@@ -53,6 +55,9 @@ router.get('/doctor/receta/ver_receta/:id',passport.authenticate('doctor', { ses
 
 //para la prueba
 router.get('/doctor/listar',doctorController.listar)
+
+//probar meter medicamentos
+router.post('/doctor/receta/prueba/medicamento',doctorController.probandoMeterMedicamentos)
 
 module.exports = router;
  

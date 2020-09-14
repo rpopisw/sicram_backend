@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 const dependiente = require('./dependiente');
+const mailer = require('../mail/mailer')
 
 var UserSchema = new Schema({
   username: {
@@ -96,5 +97,26 @@ UserSchema.methods.comparePassword = function (passw, cb) {
         cb(null, isMatch);
     });
 };
+//opciones para el mediador_mailer
+UserSchema.methods.recibirMensaje = function(msg,asunto){
+    console.log("PACIENTE "+this.email+" RECIBIENDO:"+msg)
+
+    //-----------------------
+    const email_options = {
+        from: 'iammiguel60@gmail.com',
+        to: this.email,
+        subject: asunto,
+        text: msg
+    }
+    
+    mailer.sendMail(email_options,function(err){
+        if(err){ return console.log(err.message)}
+        console.log('Se ha enviado un mail a: '+this.email+'.')
+    })
+
+
+
+
+}
 
 module.exports = mongoose.model('User', UserSchema);

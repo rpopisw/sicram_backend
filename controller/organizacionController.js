@@ -9,6 +9,7 @@ var Especialidad = require("../models/especialidad")
 var Horario = require("../models/horario")
 const loggerwin = require('../utils/logger_winston.js')
 const chalk = require("chalk");
+const mailer = require("../mail/mediador_mailer")
 
 const logger = console.log;
 
@@ -43,7 +44,7 @@ exports.SignupOrganizacion = async function (req, res) {
                especialidad:req.body.especialidad
             })
             newOrg.especialidad.push(especialidad)*/
-
+            mailer.notificarRegistro(`EXITO! ${newOrg.nameOrg} CON RUC:${newOrg.ruc} USTED ES UNA NUEVA ORGANIZACION `,newOrg)
             await newOrg.save(function (error, newOrga) {
               if (error) {
                 loggerwin.info("usuario ya existe");

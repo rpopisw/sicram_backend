@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
+const mailer = require('../mail/mailer')
 
 var OrganizacionSchema = new Schema({
   ruc:{
@@ -81,4 +82,21 @@ OrganizacionSchema.methods.toJSON=function(){
 OrganizacionSchema.pre('deleteOne', function (next){
     console.log('antes de eliminar organizacion eliminamos referencias')
 })
+
+OrganizacionSchema.methods.recibirMensaje =  function(msg,asunto){
+    console.log("ORGANIZACION RECIBIENDO:"+msg)
+
+    //-----------------------
+    const email_options = {
+        from: 'iammiguel60@gmail.com',
+        to: this.email,
+        subject: asunto,
+        text: msg
+    }
+    
+    mailer.sendMail(email_options,function(err){
+        if(err){ return console.log(err.message)}
+        console.log('Se ha enviado un mail a: '+this.email+'.')
+    })
+}
 module.exports = mongoose.model('Organizacion', OrganizacionSchema);

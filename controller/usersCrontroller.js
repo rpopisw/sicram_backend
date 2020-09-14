@@ -7,6 +7,10 @@ var Cita = require("../models/cita");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
 const logger = console.log;
+const mailer = require("../mail/mediador_mailer")
+const Doctor = require("../models/doctor")
+const Organizacion = require("../models/organizacion");
+
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
@@ -33,6 +37,8 @@ exports.SignupUsuario = async function (req, res) {
             celular: req.body.celular,
             direccion: req.body.direccion,
           });
+          
+          mailer.notificarRegistro(`EXITO! ${newUser.name} ${newUser.lastname} USTED ES UN NUEVO PACIENTE `,newUser)
           // guardamos usuario registrado
           await newUser.save(function (err) {
             if (err) {
@@ -199,3 +205,17 @@ getToken = function (headers) {
     return null;
   }
 };
+
+//probando el mailer
+exports.probandomailer = function (req, res) {
+  const paciente = new User({ name:'Juan',lastname:'Merino',email: 'miguel.ramirez7@unmsm.edu.pe' });
+  const doctor = new Doctor({ name: 'Cirilo',email: 'miguel.ramirez7@unmsm.edu.pe' })
+  const org = new Organizacion({ email: 'miguel.ramirez7@unmsm.edu.pe' })
+  console.log('email de paciente: ' + paciente.email)
+  mailer.notificarRegistro(`EXITO! ${paciente.name} ${paciente.lastname} USTED ES UN NUEVO PACIENTE `,paciente)
+  mailer.notificarActualizacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
+  mailer.notificarEliminacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
+
+  res.json({msg:'prueba'})
+
+} 

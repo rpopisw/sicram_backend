@@ -9,6 +9,7 @@ var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
 const logger = console.log;
+const mailer = require("../mail/mediador_mailer")
 //generar nueva citas
 exports.GenerarNuevaCita = async function (req, res) {
   try {
@@ -117,6 +118,8 @@ exports.GenerarNuevaCita = async function (req, res) {
                                       msg: "Exito nueva cita creada.",
                                     });
                                   });
+                                  mailer.notificarNuevaCita(`HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
+                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${doctor.fecha}\n HORA INICIO: ${doctor.hora_inicio}\n HORA FIN: ${doctor.hora_fin} `,doctor)
                                   //agregamos la cita para el usuario.
                                   paciente.cita.push(nuevacita);
                                   //agregamos la cita para el doctor

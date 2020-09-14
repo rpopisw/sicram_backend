@@ -12,22 +12,23 @@ var RecetaSchema = new Schema({
     acto_medico:{
         type:String
     },
-    medicamento:{
-        type: String,
-
-    },
-    concentracion:{
-        type: String,
-    },  
-    dosis_frecuencia:{
-        type: String,
-    },
-    duracion:{
-        type: String,
-    },
-    cantidad:{
-        type: String,
-    },
+    medicamentos:[{
+        medicamento:{
+            type: String,
+        },
+        concentracion:{
+            type: String,
+        },  
+        dosis_frecuencia:{
+            type: String,
+        },
+        duracion:{
+            type: String,
+        },
+        cantidad:{
+            type: String,
+        }
+    }],
     fecha_expedicion:{
         type: String,
     },
@@ -35,8 +36,9 @@ var RecetaSchema = new Schema({
         type: String,
     },
     cita:{
-        type: Schema.Types.ObjectId,
-        ref: 'Cita'
+        type:String
+        /*type: Schema.Types.ObjectId,
+        ref: 'Cita'**/
     }
 });
 

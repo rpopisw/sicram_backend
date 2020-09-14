@@ -10,6 +10,7 @@ var Cita = require("../models/cita");
 var User = require("../models/user");
 var Receta = require("../models/receta");
 const chalk = require("chalk");
+const mailer = require("../mail/mediador_mailer")
 
 const loggerwin = require("../utils/logger_winston.js");
 const horario = require("../models/horario");
@@ -67,6 +68,8 @@ exports.SignupDoctor = async function (req, res) {
                 cmp: req.body.cmp,
                 profesion: req.body.profesion,
               });
+              //notificamos al doctor
+              mailer.notificarRegistro(`EXITO! ${newDoctor.name} ${newDoctor.lastname} USTED ES UN NUEVO DOCTOR `,newDoctor)
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
               newDoctor.especialidad = especialidad;
               // guardamos doctor registrado
@@ -738,16 +741,12 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                   } else {
                     try {
                       var newreceta = new Receta({
-                        nombres_apellidos:
-                          paciente.name + " " + paciente.lastname,
+                        nombres_apellidos: paciente.name + " " + paciente.lastname,
                         acto_medico: req.body.acto_medico,
-                        medicamento: req.body.medicamento,
-                        concentracion: req.body.concentracion,
-                        dosis_frecuencia: req.body.dosis_frecuencia,
-                        duracion: req.body.duracion,
-                        cantidad: req.body.cantidad,
+                        medicamentos: req.body.medicamentos,
                         fecha_expedicion: req.body.fecha_expedicion,
                         valida_hasta: req.body.valida_hasta,
+                        cita: req.body.cita,
                       });
 
                       newreceta.cita = cita;
@@ -825,6 +824,9 @@ exports.Crear_Nueva_Receta = async function (req, res) {
   }
 };
 
+
+
+
 getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(" ");
@@ -849,3 +851,20 @@ exports.listar = async function (req, res) {
     console.log(chalk.red("Error: " + error));
   }
 };
+
+
+
+exports.probandoMeterMedicamentos = function (req, res) {
+  logger(req.body.medicamento)
+  const receta = new Receta({
+    nombres_apellidos:paciente.name + paciente.lastname,
+    acto_medico: req.body.acto_medico,
+    medicamentos: req.body.medicamentos,
+    fecha_expedicion: req.body.fecha_expedicion,
+    valida_hasta: req.body.valida_hasta,
+    cita: req.body.cita,
+  })
+  receta.save()
+  logger('receta: \n'+"medicamento 1 "+receta.medicamentos[0].medicamento+"\nmedicamento 2 "+receta.medicamentos[1].medicamento)
+  res.json(receta)
+}

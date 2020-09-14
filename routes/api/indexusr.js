@@ -76,5 +76,9 @@ router.get('/especialidad',especialidadController.Obtener_Especialidades);
 router.get('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
 
 
+//----------------pruebas
+//prbando mailer
+router.get('/prueba/mailer',userController.probandomailer)
+
 
 module.exports = router;
