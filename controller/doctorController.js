@@ -57,6 +57,7 @@ exports.SignupDoctor = async function (req, res) {
               var newDoctor = new Doctor({
                 username: req.body.username,
                 password: req.body.password,
+                genero: req.body.genero,
                 email: req.body.email,
                 name: req.body.name,
                 lastname: req.body.lastname,

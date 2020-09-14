@@ -26,6 +26,7 @@ exports.SignupUsuario = async function (req, res) {
             email: req.body.email,
             name: req.body.name,
             lastname: req.body.lastname,
+            genero: req.body.genero,
             dni: req.body.dni,
             edad: req.body.edad,
             discapacidad: req.body.discapacidad,

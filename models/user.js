@@ -18,6 +18,9 @@ var UserSchema = new Schema({
         required: true,
         unique: true
   },
+  genero: {
+      type:String,
+  },
   name:  {
         type: String,
         required: true,

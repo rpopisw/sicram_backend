@@ -9,6 +9,9 @@ var DependienteSchema = new Schema({
     lastname: {
             type: String,
             required: true,
+    },
+    genero: {
+        type:String,
     },    
     email:  {
             type: String,

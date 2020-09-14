@@ -21,6 +21,7 @@ exports.Agregar_Dependiente = async function (req, res) {
           name: req.body.name,
           lastname: req.body.lastname,
           email: req.body.email,
+          genero: req.body.genero,
           dni: req.body.dni,
           edad: req.body.edad,
           discapacidad: req.body.discapacidad,
