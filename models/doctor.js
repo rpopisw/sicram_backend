@@ -35,6 +35,9 @@ var DoctorSchema = new Schema({
         type: Number,
         required: true,
   },
+  genero: {
+    type:String,
+    },
   celular: {
         type: Number,
         required: true,

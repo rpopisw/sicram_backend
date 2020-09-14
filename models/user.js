@@ -18,6 +18,9 @@ var UserSchema = new Schema({
         required: true,
         unique: true
   },
+  genero: {
+      type:String,
+  },
   name:  {
         type: String,
         required: true,
@@ -81,7 +84,6 @@ UserSchema.methods.toJSON=function(){
     let user= this;
     let userObject = user.toObject();
     delete userObject.password;
-    delete userObject.email;
     return userObject;
 };
 
