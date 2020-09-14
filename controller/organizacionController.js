@@ -251,6 +251,7 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
                     lastname: req.body.lastname,
                     dni: req.body.dni,
                     edad: req.body.edad,
+                    genero: req.body.genero,
                     celular: req.body.celular,
                     cmp: req.body.cmp,
                     profesion: req.body.profesion,
