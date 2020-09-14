@@ -9,7 +9,7 @@ var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
 const logger = console.log;
-const mailer = require("../mail/mediador_mailer")
+const mailer = require("../mail/mediador_mailer");
 //generar nueva citas
 exports.GenerarNuevaCita = async function (req, res) {
   try {
@@ -118,11 +118,11 @@ exports.GenerarNuevaCita = async function (req, res) {
                                       msg: "Exito nueva cita creada.",
                                     });
                                   });
-                                  
-                                  //notificamos al doctor
-                                  mailer.notificarNuevaCita(`HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
-                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${doctor.fecha}\n HORA INICIO: ${doctor.hora_inicio}\n HORA FIN: ${doctor.hora_fin} `,doctor)
-                                  
+                                  mailer.notificarNuevaCita(
+                                    `HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
+                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${doctor.fecha}\n HORA INICIO: ${doctor.hora_inicio}\n HORA FIN: ${doctor.hora_fin} `,
+                                    doctor
+                                  );
                                   //agregamos la cita para el usuario.
                                   paciente.cita.push(nuevacita);
                                   //agregamos la cita para el doctor
@@ -206,14 +206,17 @@ exports.Obtener_Citas_Paciente = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Cita :  ") + chalk.green(req.user.id));
-        await Cita.find({ user: req.user.id, estado:{$ne:'atendido'} }, (err, citas) => {
-          if (err) {
-            logger(chalk.red("Cita no encontrada"));
-            res.json({ msg: "no encontro las cita" });
-          } else {
-            res.status(200).json(citas);
+        await Cita.find(
+          { user: req.user.id, estado: { $ne: "atendido" } },
+          (err, citas) => {
+            if (err) {
+              logger(chalk.red("Cita no encontrada"));
+              res.json({ msg: "no encontro las cita" });
+            } else {
+              res.status(200).json(citas);
+            }
           }
-        })
+        )
           .populate("horario")
           .populate("especialidad")
           .populate("doctor");
@@ -290,295 +293,120 @@ exports.Actualizar_Citas = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-        //encontramos la cita por su codigo
         await Cita.findById(req.body.id_cita, async (error, cita) => {
           try {
             if (!cita) {
-              logger(chalk.red("cita no encontrada"));
-              res.json({ msg: "cita no encontrada" });
+              res.json({ msg: "No encontramos la cita" });
             } else {
-              if ((cita.estado == "pendiente")) {
+              if (cita.estado == "pendiente") {
                 await User.findById(cita.user, async (err, paciente) => {
                   try {
                     if (!paciente) {
-                      logger(chalk.red("no se encontro paciente de la cita"));
-                      res.json({ msg: "no se encontro paciente de la cita" });
-                    }
-                    {
+                      res.json({ msg: "No es el mismo paciente." });
+                    } else {
                       await Doctor.findById(
                         cita.doctor,
                         async (err, doctor) => {
                           try {
                             if (!doctor) {
-                              logger(
-                                chalk.red("no se encontro doctor de la cita")
-                              );
-                              res.json({
-                                msg: "no se encontro doctor de la cita",
-                              });
-                            }
-                            {
+                              res.json({ msg: "Doctor de cita no encontrado" });
+                            } else {
                               await Horario.findById(
                                 cita.horario,
                                 async (err, horario1) => {
-                                  try {
-                                    if (!horario1) {
-                                      logger(
-                                        chalk.red(
-                                          "no se encontro horario de la cita"
-                                        )
-                                      );
-                                      res.json({
-                                        msg:
-                                          "no se encontro horario de la cita",
-                                      });
-                                    }
-                                    {
-                                      await Doctor.findById(
-                                        req.body._iddoctor,
-                                        async (err, doctor2) => {
-                                          try {
-                                            if (!doctor2) {
-                                              logger(
-                                                chalk.red(
-                                                  "nuevo doctor no encontrado"
-                                                )
-                                              );
-                                              res.json({
-                                                msg:
-                                                  "nuevo doctor no encontrado",
-                                              });
-                                            }
-                                            {
-                                              await Especialidad.findOne(
-                                                {
-                                                  especialidad:
-                                                    req.body.especialidad,
-                                                },
-                                                async (err, especialidad) => {
-                                                  try {
-                                                    if (!especialidad) {
-                                                      logger(
-                                                        chalk.red(
-                                                          "no se encontro especialidad"
-                                                        )
-                                                      );
-                                                      res.json({
-                                                        msg:
-                                                          "no se encontro especilidad",
-                                                      });
-                                                    } else {
-                                                      if (
-                                                        doctor2.especialidad.equals(
-                                                          especialidad._id
-                                                        )
-                                                      ) {
-                                                        await Horario.findOne(
-                                                          {
-                                                            fecha:
-                                                              req.body.fecha,
-                                                            hora_inicio:
-                                                              req.body
-                                                                .hora_inicio,
-                                                            hora_fin:
-                                                              req.body.hora_fin,
-                                                            doctor: doctor2,
-                                                          },
-                                                          async (
-                                                            err,
-                                                            horario
-                                                          ) => {
-                                                            try {
-                                                              if (!horario) {
-                                                                logger(
-                                                                  chalk.red(
-                                                                    "HORARIO NO COINCIDE "
-                                                                  )
-                                                                );
-                                                                res.json({
-                                                                  msg:
-                                                                    "HORARIO NO COINCIDE",
-                                                                });
-                                                              } else {
-                                                                if (
-                                                                  horario.ocupado ==
-                                                                  true
-                                                                ) {
-                                                                  logger(
-                                                                    chalk.red(
-                                                                      "HORARIO USADO"
-                                                                    )
-                                                                  );
-                                                                  res.json({
-                                                                    msg:
-                                                                      "HORARIO YA ESTA USADO ",
-                                                                    cita:
-                                                                      horario.cita,
-                                                                  });
-                                                                } else {
-                                                                  //---------------sacando cita de paciente actual--
-                                                                  const pacientes_cita_tmp =
-                                                                    paciente.cita;
-                                                                  const find_index = pacientes_cita_tmp.indexOf(
-                                                                    cita._id
-                                                                  );
-                                                                  //sacamos la cita del paciente
-                                                                  pacientes_cita_tmp.splice(
-                                                                    find_index,
-                                                                    1
-                                                                  );
+                                  if (!horario1) {
+                                    res.json({
+                                      msg: "No se encontró el horario",
+                                    });
+                                  } else {
+                                    await Doctor.findById(
+                                      req.body._iddoctor,
+                                      async (err, doctor2) => {
+                                        try {
+                                          if (!doctor2) {
+                                            res.json({
+                                              msg: "Nuevo doctor no encontrado",
+                                            });
+                                          } else {
+                                            await Especialidad.findOne(
+                                              {
+                                                especialidad: req.body.especialidad,
+                                              },
+                                              async (err, especialidad) => {
+                                                if(!especialidad){
+                                                  res.json({msg:"Nueva especialidad no encontrada"});
+                                                }else{
+                                                  if (
+                                                    doctor2.especialidad.equals(
+                                                      especialidad._id
+                                                    )
+                                                  ) {
+                                                      await Horario.findOne({
+                                                        fecha:
+                                                          req.body.fecha,
+                                                        hora_inicio:
+                                                          req.body
+                                                            .hora_inicio,
+                                                        hora_fin:
+                                                          req.body.hora_fin,
+                                                        doctor: doctor2,
+                                                      }, async(err,horario)=>{
+                                                        if(!horario){
+                                                          res.json({msg:"El horario introducido no existe"});
+                                                        }else{
+                                                          if(horario.ocupado==true){
+                                                            res.json({msg:"El horario se encuentra ocupado"});
+                                                          }else{
+                                                            cita.doctor = doctor2;
+                                                            cita.especialidad = especialidad;
+                                                            cita.horario = horario;
+                                                            await cita.save();
 
-                                                                  //---------------sacando cita de doctor actual--
-                                                                  const doctor_cita_tmp =
-                                                                    doctor.cita;
-                                                                  const find_index_doctor = doctor_cita_tmp.indexOf(
-                                                                    cita._id
-                                                                  );
-                                                                  //sacamos la cita del doctor
-                                                                  doctor_cita_tmp.splice(
-                                                                    find_index_doctor,
-                                                                    1
-                                                                  );
+                                                            horario.ocupado=true;
+                                                            await horario.save();
 
-                                                                  //---------------sacando cita de horario actual y desocupando horario--
-                                                                  horario1.ocupado = false;
-                                                                  horario1.cita = null;
-                                                                  //---------------sacando especilidad de la cita--
-                                                                  horario1.especialidad = null;
-
-                                                                  //paciente.save()
-                                                                  doctor.save();
-                                                                  horario1.save();
-                                                                  //cita.save()
-
-                                                                  logger(
-                                                                    chalk.blue(
-                                                                      "HORARIO: "
-                                                                    ) +
-                                                                      chalk.green(
-                                                                        horario
-                                                                      )
-                                                                  );
-                                                                  //horario estara ocupado
-                                                                  horario.ocupado = true;
-
-                                                                  cita.user = paciente;
-                                                                  cita.doctor = doctor2;
-                                                                  cita.especialidad = especialidad;
-                                                                  cita.horario = horario;
-
-                                                                  await cita.save(
-                                                                    function (
-                                                                      err
-                                                                    ) {
-                                                                      if (err) {
-                                                                        return res.json(
-                                                                          {
-                                                                            success: false,
-                                                                            msg:
-                                                                              "Error al guardar la cita",
-                                                                          }
-                                                                        );
-                                                                      }
-                                                                      res.json({
-                                                                        msg:
-                                                                          "cita actualizada",
-                                                                        cita: cita,
-                                                                      });
-                                                                    }
-                                                                  );
-                                                                  //agregamos la cita para el usuario.
-                                                                  paciente.cita.push(
-                                                                    cita
-                                                                  );
-                                                                  //agregamos la cita para el doctor
-                                                                  doctor2.cita.push(
-                                                                    cita
-                                                                  );
-                                                                  mailer.notificarActualizacionDeCita(doctor,doctor2,paciente)
-                                                                  //guardamos al user con su cita
-                                                                  await paciente.save();
-                                                                  //guardamos al doctor con su cita
-                                                                  await doctor2.save();
-                                                                  //guardamos la cita en el horario
-                                                                  horario.cita = cita;
-                                                                  //guardamos al horario con su cita
-                                                                  await horario.save();
-                                                                }
-                                                              }
-                                                            } catch (error) {
-                                                              logger(
-                                                                chalk.red(
-                                                                  "ERROR: "
-                                                                ) +
-                                                                  chalk.white(
-                                                                    error
-                                                                  )
-                                                              );
-                                                              throw error;
-                                                            }
+                                                            res.json({msg:"Cita actualizada"});
                                                           }
-                                                        );
-                                                      } else {
-                                                        logger(
-                                                          chalk.red(
-                                                            "Especialidad no coincide"
-                                                          )
-                                                        );
-                                                        res.json({
-                                                          msg:
-                                                            "La especialidad del doctor no coincide",
-                                                        });
-                                                      }
-                                                    }
-                                                  } catch (error) {
-                                                    logger(
-                                                      chalk.red("ERROR: ") +
-                                                        chalk.white(error)
-                                                    );
-                                                    throw error;
+                                                        }
+                                                       });
+
+
+
+                                                  }else{
+                                                    res.json({msg:"El doctor no existe en la especialidad"})
                                                   }
                                                 }
-                                              );
-                                            }
-                                          } catch (error) {
-                                            logger(
-                                              chalk.red("ERROR: ") +
-                                                chalk.white(error)
+                                              }
                                             );
-                                            throw error;
+                                            
                                           }
+                                        } catch (err) {
+                                          res.json(err);
                                         }
-                                      );
-                                    }
-                                  } catch (error) {
-                                    logger(
-                                      chalk.red("ERROR: ") + chalk.white(error)
+                                      }
                                     );
-                                    throw error;
                                   }
                                 }
                               );
                             }
-                          } catch (error) {
-                            logger(chalk.red("ERROR: ") + chalk.white(error));
-                            throw error;
+                          } catch (err) {
+                            res.json(err);
                           }
                         }
                       );
                     }
-                  } catch (error) {
-                    logger(chalk.red("ERROR: ") + chalk.white(error));
-                    throw error;
+                  } catch (err) {
+                    res.json(err);
                   }
                 });
               } else {
-                res.json({ msg: "No puede actualizar una cita atendida." });
+                res.json({
+                  msg: "No se puede actualizar una cita que no esté pendiente.",
+                });
               }
             }
-          } catch (error) {
-            logger("ERROR" + error);
-            throw error;
+          } catch (err) {
+            res.json(err);
           }
         });
       } else {
@@ -643,8 +471,7 @@ exports.Eliminar_cita = async function (req, res) {
               { _id: cita.doctor },
               { $set: { cita: doctor_cita_tmp } }
             );
-            //notificando
-            mailer.notificarEliminacionDeCita(`El paciente ${paciente.name},${paciente.lastname} \n elimino su cita \nHORARIO DE CITA ELIMINADA:\nfecha: ${horario.fecha} \nhorario:${horario.hora_inicio} - ${horario.hora_fin}`)
+
             await cita.remove();
             paciente.save();
             doctor.save();
@@ -806,18 +633,19 @@ exports.Registrar_Sintomas = async function (req, res) {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
-        await Cita.findById(req.body.id_cita, async(err,cita)=>{
-          if(err){
-            res.json({msg: "No se encontró la cita"});
-          }else{
-            cita.detalle_sintomas.sintoma=req.body.sintoma;
-            cita.detalle_sintomas.tratamiento_reciente=req.body.tratamiento_reciente;
-            cita.detalle_sintomas.alergia= req.body.alergia;
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "No se encontró la cita" });
+          } else {
+            cita.detalle_sintomas.sintoma = req.body.sintoma;
+            cita.detalle_sintomas.tratamiento_reciente =
+              req.body.tratamiento_reciente;
+            cita.detalle_sintomas.alergia = req.body.alergia;
             await cita.save();
 
             res.json("Sintomas agregados");
           }
-        })
+        });
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
@@ -839,7 +667,6 @@ exports.Registrar_Sintomas = async function (req, res) {
     res.json(err);
   }
 };
-
 
 //metodo para confirmar que entro un token
 getToken = function (headers) {
