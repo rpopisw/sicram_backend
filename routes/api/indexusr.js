@@ -6,8 +6,8 @@ var userController = require("../../controller/usersCrontroller");
 var especialidadController = require("../../controller/especialidadController");
 var dependienteCotroller = require('../../controller/dependienteController');
 var citaController = require('../../controller/citaController');
-const { Router } = require('express');
-const { route } = require('./indexdct');
+
+const upload = require('../../libs/storage')
 
 
 router.get('/',function (req,res) {
@@ -79,6 +79,9 @@ router.get('/especialidad/doctores',especialidadController.Obtener_Doctores_por_
 //----------------pruebas
 //prbando mailer
 router.get('/prueba/mailer',userController.probandomailer)
+
+//probando multer
+router.post('/prueba/multer',upload.single('imagen'),userController.probandomulter)
 
 
 module.exports = router;

@@ -21,7 +21,8 @@ require('./config/userpassport');
 
 app.use(passport.initialize());
 app.use(passport.session());
-//M
+//Middlerware
+app.use('/storage',express.static('storage'))
 
 //habilitando cors:
 app.use(cors());

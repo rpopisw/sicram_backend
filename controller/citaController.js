@@ -120,7 +120,7 @@ exports.GenerarNuevaCita = async function (req, res) {
                                   });
                                   mailer.notificarNuevaCita(
                                     `HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
-                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${doctor.fecha}\n HORA INICIO: ${doctor.hora_inicio}\n HORA FIN: ${doctor.hora_fin} `,
+                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${horario.fecha}\n HORA INICIO: ${horario.hora_inicio}\n HORA FIN: ${horario.hora_fin} `,
                                     doctor
                                   );
                                   //agregamos la cita para el usuario.

@@ -11,6 +11,11 @@ const mailer = require("../mail/mediador_mailer")
 const Doctor = require("../models/doctor")
 const Organizacion = require("../models/organizacion");
 
+const Receta = require("../models/receta")
+
+//multer
+const upload = require("../libs/storage")
+
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
@@ -218,4 +223,15 @@ exports.probandomailer = function (req, res) {
 
   res.json({msg:'prueba'})
 
-} 
+}
+
+//probando multeral
+exports.probandomulter = function (req, res) {
+    const receta = new Receta({
+      firma: req.file.path,
+    })
+
+    console.log(req.file)
+
+    res.json(receta)
+}

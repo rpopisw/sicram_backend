@@ -66,6 +66,7 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
         }
     }
 }
+    
 Mediador_mailer.notificarEliminacionDeCita = (msg,usuario)=>{
     const asunto = 'SICRAM: ELIMINACION DE CITA'
     if(usuario instanceof Doctor){

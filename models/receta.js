@@ -36,9 +36,11 @@ var RecetaSchema = new Schema({
         type: String,
     },
     cita:{
+        type: Schema.Types.ObjectId,
+        ref: 'Cita'
+    },
+    firma:{
         type:String
-        /*type: Schema.Types.ObjectId,
-        ref: 'Cita'**/
     }
 });
 
