@@ -11,6 +11,9 @@ var DiagnosticoSchema= new Schema({
     genero:{
         type: String
     },
+    fecha:{
+        type: String
+    },
     edad: {
         type: Number
     },
