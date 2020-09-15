@@ -440,42 +440,46 @@ exports.Eliminar_cita = async function (req, res) {
       if (req.user.id == req.params.id) {
         //encontramos la cita por su codigo
         await Cita.findOne({ _id: req.body.id_cita }, async (error, cita) => {
-          if (error) {
+          if (!cita) {
             res.json({ msg: "cita no encontrada" });
           } else {
-            const paciente = await User.findOne({ _id: req.params.id });
-            const pacientes_cita_tmp = paciente.cita;
-            const find_index = pacientes_cita_tmp.indexOf(req.body.id_cita);
-            pacientes_cita_tmp.splice(find_index, 1);
+            await User.findById(cita.user,async(err,paciente)=>{
+              if(!paciente){
+                res.json({msg:"No se encuentra al paciente de la cita"});
+              }else{
+                await Doctor.findById(cita.doctor, async(err,doctor)=>{
+                  if(!doctor){
+                    res.json({msg: "Doctor de cita no encontrado"});
+                  }else{
+                    await Horario.findById(cita.horario, async(err,horario)=>{
+                      if(!horario){
+                        res.json({msg: "No se encuentra el horario de la cita"});
+                      }else{
+                        //Encuentro la cita dentro del paciente y la borro
+                        const index = paciente.cita.indexOf(cita._id);
+                        
+                        paciente.cita.splice(index, 1);
+                        await paciente.save();
+                        //Encuentro la cita dentro del doctor y la borro
+                        const indexdoctor = doctor.cita.indexOf(cita._id);
+        
+                        doctor.cita.splice(indexdoctor, 1);
+                        await doctor.save();
 
-            await paciente.updateOne(
-              { _id: req.params.id },
-              { $set: { cita: pacientes_cita_tmp } }
-            );
+                        //Ahora que las citas están borradas cambio el horario por desocupado
+                        horario.ocupado=false;
+                        horario.cita=null;
+                        await horario.save(); 
+                        
+                        //Ahora elimino el documento cita de la colección
+                        await cita.remove();
 
-            const doctor = await Doctor.findOne({ _id: cita.doctor });
-            const doctor_cita_tmp = doctor.cita;
-            const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id_cita);
-            doctor_cita_tmp.splice(find_index_doctor, 1);
-
-            //desocupando horario de cita eliminada
-            const horario = await Horario.findOne({ cita: cita._id });
-            horario.ocupado = false;
-            horario.cita = null;
-            horario.save();
-            logger("se elimina la cita LUEGO");
-           
-            await doctor.updateOne(
-              { _id: cita.doctor },
-              { $set: { cita: doctor_cita_tmp } }
-            );
-
-            await cita.remove();
-            paciente.save();
-            doctor.save();
-
-            res.json({
-              msg: "cita eliminada"
+                        res.json({msg: "Cita eliminada"});
+                      }
+                    })
+                  }
+                })
+              }
             });
           }
         });
