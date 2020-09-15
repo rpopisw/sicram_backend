@@ -726,6 +726,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
                                     nombres_apellidos: paciente.name + " " + paciente.lastname,
                                     genero: paciente.genero,
                                     fecha: horario.fecha,
+                                    nombres_medico: doctor.name+" "+doctor.lastname,
                                     edad: paciente.edad,
                                     diagnostico: req.body.diagnostico,
                                     resultados_labo: req.body.resultados_labo,
