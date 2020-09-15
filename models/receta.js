@@ -36,9 +36,9 @@ var RecetaSchema = new Schema({
         type: String,
     },
     cita:{
-        type:String
-        /*type: Schema.Types.ObjectId,
-        ref: 'Cita'**/
+        
+        type: Schema.Types.ObjectId,
+        ref: 'Cita'
     }
 });
 

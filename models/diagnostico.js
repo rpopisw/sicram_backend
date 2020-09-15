@@ -3,7 +3,7 @@ var Schema= mongoose.Schema;
 
 var DiagnosticoSchema= new Schema({
     dni:{
-        type:String,
+        type: Number,
     },
     nombres_apellidos:{
         type:String
@@ -16,8 +16,21 @@ var DiagnosticoSchema= new Schema({
     },
     diagnostico:{
         type: String,
+    },
+    resultados_labo:{
+        type: String,
+    },
+    tratamiento:{
+        type: String
+    },
+    user:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    cita:{
+        type: Schema.Types.ObjectId,
+        ref: 'Cita'
     }
-
 })
 
 

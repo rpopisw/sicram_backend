@@ -34,6 +34,10 @@ var CitaSchema = new Schema({
         tratamiento_reciente:{type: Boolean , default: false},
         alergia:{type: Boolean, default: false}
     },
+    diagnostico:{
+        type: Schema.Types.ObjectId,
+        ref: 'Diagnostico',
+    },
     aulaVirtual:{
         sessionId:{
             type: String,

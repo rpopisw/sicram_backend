@@ -5,6 +5,7 @@ var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var Receta = require("../models/receta");
+var Diagnostico = require("../models/diagnostico");
 var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
@@ -470,7 +471,7 @@ exports.Eliminar_cita = async function (req, res) {
                         horario.ocupado=false;
                         horario.cita=null;
                         await horario.save(); 
-                        
+
                         //Ahora elimino el documento cita de la colección
                         await cita.remove();
 
@@ -663,6 +664,122 @@ exports.Registrar_Sintomas = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    res.json(err);
+  }
+};
+
+exports.Registrar_Diagnostico = async function(req,res){
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (err) {
+            res.json({ msg: "No se encontró al doctor" });
+          } else {
+            await Cita.findById(req.body.id_cita, async (err, cita) => {
+              if (err) {
+                res.json({ msg: "No se encontró la cita" });
+              } else {
+                await User.findById(cita.user, async (err, paciente) => {
+                  if (err) {
+                    res.json({ msg: "No se encontró al paciente de la cita" });
+                  } else {
+                    try {
+                      
+                      
+                      var newdiagnostico = new Diagnostico({
+                        dni: paciente.dni,
+                        nombres_apellidos: paciente.name + " " + paciente.lastname,
+                        genero: paciente.genero,
+                        edad: paciente.edad,
+                        diagnostico: req.body.diagnostico,
+                        resultados_labo: req.body.resultados_labo,
+                        tratamiento: req.body.tratamiento,
+                      });
+
+                      newdiagnostico.cita = cita;
+                      newdiagnostico.user=paciente;
+                      await newdiagnostico.save();
+                      //Introducimos el diagnostico a la cita
+                      cita.diagnostico= newdiagnostico;
+                      await cita.save();
+
+                      paciente.diagnostico.push(newdiagnostico);
+                      await paciente.save();
+                      res.json({ msg: "Nuevo diagnóstico guardado" });
+
+                      
+                    } catch (err) {
+                      res.json(err);
+                    }
+
+                  }
+                });
+              }
+            });
+          }
+        });
+        
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "ERROR: " + err });
+  }
+};
+
+exports.Ver_Diagnostico_Paciente=async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Diagnostico.findById(cita.diagnostico, async (err, diagnostico) => {
+              if (err) {
+                res.json({ msg: "No se encontró un diagnóstico para esta cita" });
+              } else {
+                res.json(diagnostico);
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
     res.json(err);
   }
 };
