@@ -230,7 +230,6 @@ exports.probandomulter = function (req, res) {
     const receta = new Receta({
       firma: req.file.path,
     })
-
     console.log(req.file)
 
     res.json(receta)

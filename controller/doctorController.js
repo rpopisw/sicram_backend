@@ -629,6 +629,45 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
   }
 };
 
+//obtener detalles de la cita de un paciente por parte del doctor de
+exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        logger(chalk.blue("obteniendo cita :  ") + chalk.green(req.user.id));
+
+        await Cita.findById(req.body.id_cita,(err, cita) => {
+          if(!cita ){
+            res.json({msg:'No se encontro la cita'})
+          }else{
+            res.json(cita)
+          }
+        }).populate('user').populate('doctor')
+        
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+  }
+}
+
 //el obtendra los datos de la cita para colocarlas por defecto a la receta
 exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
   try {

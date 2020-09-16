@@ -36,7 +36,8 @@ router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { ses
 //CITAS DEL DOCTOR
 //listar citas pendientes
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
-//listar citas atendidas
+//obtener detalles de una cita de un paciente
+router.get('/doctor/cita/detalle/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Detalles_De_Cita_De_Un_Paciente)
 
 
 
@@ -60,6 +61,11 @@ router.get('/doctor/cita/ver_historial_de_paciente/:id',passport.authenticate('d
 
 // VER DIAGNOSTICO DE ALGUNA CITA PASADa
 router.get('/doctor/diagnostico/ver_diagnostico/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_diagnostico_doctor)
+
+
+
+
+
 
 //para la prueba
 router.get('/doctor/listar',doctorController.listar)

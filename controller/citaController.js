@@ -689,6 +689,7 @@ exports.Registrar_Sintomas = async function (req, res) {
   }
 };
 
+//registrar diagnostico en la cita
 exports.Registrar_Diagnostico = async function (req, res) {
   try {
     var token = getToken(req.headers);
@@ -785,6 +786,8 @@ exports.Registrar_Diagnostico = async function (req, res) {
     res.send({ msg: "ERROR: " + err });
   }
 };
+
+
 
 exports.Ver_Diagnostico_Paciente = async function (req, res) {
   try {

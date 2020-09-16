@@ -43,3 +43,7 @@ info: "estado".equals is not a function {"timestamp":"2020-09-13T07:00:34.990Z"}
 info: false.populate is not a function {"timestamp":"2020-09-13T07:01:49.705Z"}
 info: "estado".equals is not a function {"timestamp":"2020-09-13T07:04:17.914Z"}
 info: "estado".equals is not a function {"timestamp":"2020-09-13T07:04:43.301Z"}
+info: Cast to ObjectId failed for value "452752" at path "_id" for model "Cita" {"stringValue":"\"452752\"","kind":"ObjectId","value":"452752","path":"_id","reason":{},"timestamp":"2020-09-16T04:32:13.494Z"}
+info: Cast to ObjectId failed for value "452752" at path "_id" for model "Cita" {"stringValue":"\"452752\"","kind":"ObjectId","value":"452752","path":"_id","reason":{},"timestamp":"2020-09-16T04:32:48.189Z"}
+info: El auntenticacion del usuario fallo {"timestamp":"2020-09-16T04:38:16.892Z"}
+info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-16T04:38:36.989Z"}
