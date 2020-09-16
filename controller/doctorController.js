@@ -774,21 +774,18 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                           try {
                             /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
                             const uploader = async (path) =>
-                              await cloudinary.uploads(path, "Firmas");
-                            console.log(req.file);
+                            await cloudinary.uploads(path, "Firmas");
+                            //console.log(req.file);
                             const file = req.file;
-                            const path = file.path;
+
+                            if(file){
+                              const path = file.path;
                             const newUrl = await uploader(path);
                             const firma_imagen = newUrl.url;
                             fs.unlinkSync(path);
-                            logger(
-                              chalk.green("url de imagen cargada: ") +
-                                newUrl.url
-                            );
 
                             
-                            /*------------------V-----------*/
-                            var newreceta = new Receta({
+                              var newreceta = new Receta({
                               nombres_apellidos:
                                 paciente.name + " " + paciente.lastname,
                               acto_medico: req.body.acto_medico,
@@ -806,6 +803,19 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                             await cita.save();
 
                             res.json({ msg: "Nueva receta guardada" });
+                            }else{
+                              res.json({msg:"No se detectó ninguna imagen"});
+                            }
+                            
+                           
+                            /*logger(
+                              chalk.green("url de imagen cargada: ") +
+                                newUrl.url
+                            );
+                              */
+                            
+                            /*------------------V-----------*/
+                            
                           } catch (err) {
                             res.json(err);
                           }
