@@ -25,7 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Middlerware
-app.use(uploads.array()); 
+//app.use(uploads.array()); 
 app.use('/storage',express.static('storage'))
 
 //habilitando cors:

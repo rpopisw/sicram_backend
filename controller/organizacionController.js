@@ -153,7 +153,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
         await Organizacion.findById(req.user.id, async (err, org) => {
           if (err) {
             logger(
-              chalk.blue("usuario no encontrado aqui el error: ") +
+              chalk.blue("Usuario no encontrado aqui el error: ") +
                 chalk.red(err)
             );
           } else {

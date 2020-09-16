@@ -210,7 +210,7 @@ exports.Obtener_Citas_Paciente = async function (req, res) {
         await Cita.find(
           { user: req.user.id, estado: { $ne: "atendido" } },
           (err, citas) => {
-            if (err) {
+            if (!citas) {
               logger(chalk.red("Cita no encontrada"));
               res.json({ msg: "no encontro las cita" });
             } else {
@@ -254,7 +254,7 @@ exports.Obtener_Citas_Atendidas_Paciente = async function (req, res) {
         await Cita.find(
           { user: req.user.id, estado: "atendido" },
           (err, CitasOcupadas) => {
-            if (err) {
+            if (!CitasOcupadas) {
               logger(chalk.red("Cita no encontrada"));
               res.json({ msg: "No encontro las citas" });
             } else {
@@ -533,7 +533,7 @@ exports.Eliminar_cita_prueba = async function (req, res) {
   try {
     //encontramos la cita por su codigo
     await Cita.findOne({ _id: req.body.id }, async (error, cita) => {
-      if (error) {
+      if (!cita) {
         logger(chalk.red("Cita no encontrada"));
         res.json({ msg: "cita no encontrada" });
       } else {
@@ -575,11 +575,11 @@ exports.Ver_receta_paciente = async function (req, res) {
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
         await Cita.findById(req.body.id_cita, async (err, cita) => {
-          if (err) {
+          if (!cita) {
             res.json({ msg: "Cita no encontrada" });
           } else {
             await Receta.findById(cita.receta, async (err, receta) => {
-              if (err) {
+              if (!receta) {
                 res.json({ msg: "No se encontraron recetas para esta cita" });
               } else {
                 res.json(receta);
@@ -616,11 +616,11 @@ exports.Ver_receta_doctor = async function (req, res) {
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
         await Cita.findById(req.body.id_cita, async (err, cita) => {
-          if (err) {
+          if (!cita) {
             res.json({ msg: "Cita no encontrada" });
           } else {
             await Receta.findById(cita.receta, async (err, receta) => {
-              if (err) {
+              if (!receta) {
                 res.json({ msg: "No se encontraron recetas para esta cita" });
               } else {
                 res.json(receta);
@@ -655,7 +655,7 @@ exports.Registrar_Sintomas = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Cita.findById(req.body.id_cita, async (err, cita) => {
-          if (err) {
+          if (!cita) {
             res.json({ msg: "No se encontró la cita" });
           } else {
             cita.detalle_sintomas.sintoma = req.body.sintoma;
@@ -696,7 +696,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Doctor.findById(req.user.id, async (err, doctor) => {
-          if (err) {
+          if (!doctor) {
             res.json({ msg: "No se encontró al doctor" });
           } else {
             await Cita.findById(req.body.id_cita, async (err, cita) => {
@@ -708,7 +708,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
                     await Horario.findById(
                       cita.horario,
                       async (err, horario) => {
-                        if (err) {
+                        if (!horario) {
                           res.json({
                             msg: "No se encuentra un horario para esta cita",
                           });
@@ -796,13 +796,13 @@ exports.Ver_Diagnostico_Paciente = async function (req, res) {
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
         await Cita.findById(req.body.id_cita, async (err, cita) => {
-          if (err) {
+          if (!cita) {
             res.json({ msg: "Cita no encontrada" });
           } else {
             await Diagnostico.findById(
               cita.diagnostico,
               async (err, diagnostico) => {
-                if (err) {
+                if (!diagnostico) {
                   res.json({
                     msg: "No se encontró un diagnóstico para esta cita",
                   });
@@ -895,11 +895,11 @@ exports.Ver_diagnostico_doctor=async function(req,res){
       if (req.user.id == req.params.id) {
         //verificar que sea el mismo usuario del token y el de params en la ruta
         await Cita.findById(req.body.id_cita, async (err, cita) => {
-          if (err) {
+          if (!cita) {
             res.json({ msg: "Cita no encontrada" });
           } else {
             await Diagnostico.findById(cita.diagnostico, async (err, diagnostico) => {
-              if (err) {
+              if (!diagnostico) {
                 res.json({ msg: "No se encontró el diagnóstico de esta cita" });
               } else {
                 res.json(diagnostico);

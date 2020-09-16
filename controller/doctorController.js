@@ -10,15 +10,15 @@ var Cita = require("../models/cita");
 var User = require("../models/user");
 var Receta = require("../models/receta");
 const chalk = require("chalk");
-const mailer = require("../mail/mediador_mailer")
+const mailer = require("../mail/mediador_mailer");
 
 const loggerwin = require("../utils/logger_winston.js");
 const horario = require("../models/horario");
 const logger = console.log;
 
 //para agregar en cloudinary nuestras imagenes
-const cloudinary =require("../tools/cloudinary")
-const fs = require("fs")
+const cloudinary = require("../tools/cloudinary");
+const fs = require("fs");
 
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
@@ -73,7 +73,10 @@ exports.SignupDoctor = async function (req, res) {
                 profesion: req.body.profesion,
               });
               //notificamos al doctor
-              mailer.notificarRegistro(`EXITO! ${newDoctor.name} ${newDoctor.lastname} USTED ES UN NUEVO DOCTOR `,newDoctor)
+              mailer.notificarRegistro(
+                `EXITO! ${newDoctor.name} ${newDoctor.lastname} USTED ES UN NUEVO DOCTOR `,
+                newDoctor
+              );
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
               newDoctor.especialidad = especialidad;
               // guardamos doctor registrado
@@ -319,7 +322,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Doctor.findById(req.user.id, async (err, doctor) => {
-          if (err) {
+          if (!doctor) {
             logger(
               chalk.blue("usuario no encontrado aqui el error: ") +
                 chalk.red(err)
@@ -462,7 +465,7 @@ exports.Actualizar_horario_doctor = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Horario.findById(req.body.horario_id, async (err, horario) => {
-          if (err) {
+          if (!horario) {
             logger(
               chalk.blue("Horario no encontrado error: ") + chalk.red(err)
             );
@@ -546,7 +549,7 @@ exports.Cambiar_estado_citas = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Cita.findOne({ _id: req.body.id_cita }, (err, cita) => {
-          if (err) {
+          if (!cita) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no se encontro la cita" });
           } else {
@@ -596,7 +599,7 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
         await Cita.find({ doctor: req.user.id }, (err, citas) => {
-          if (err) {
+          if (!citas) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no encontro las cita" });
           } else {
@@ -636,20 +639,21 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
 //obtener detalles de la cita de un paciente por parte del doctor de
 exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
   try {
-        await Cita.findById(req.params.id,(err, cita) => {
-          if(!cita ){  
-            res.json({msg:'No se encontro la cita'})
-          }else{
-            logger('cita: '+ cita._id)
-            res.json(cita)
-          }
-        }).populate('user').populate('doctor')
-  
+    await Cita.findById(req.params.id, (err, cita) => {
+      if (!cita) {
+        res.json({ msg: "No se encontro la cita" });
+      } else {
+        logger("cita: " + cita._id);
+        res.json(cita);
+      }
+    })
+      .populate("user")
+      .populate("doctor");
   } catch (err) {
     loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
-}
+};
 
 //el obtendra los datos de la cita para colocarlas por defecto a la receta
 exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
@@ -660,7 +664,7 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
         //Encontrando al docotor que esta haciendo la cita
         await Doctor.findById(req.user.id, async (err, doctor) => {
           try {
-            if (err) {
+            if (!doctor) {
               logger(
                 chalk.red("ERR ") + chalk.white("no se encontro el doctor")
               );
@@ -674,7 +678,7 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
               //encontrando cita por ID mandado por Body
               await Cita.findById(req.body.id_cita, async (err, cita) => {
                 try {
-                  if (err) {
+                  if (!cita) {
                     logger(
                       chalk.red("ERR ") + chalk.white("no se encontro la cita")
                     );
@@ -750,90 +754,72 @@ exports.Crear_Nueva_Receta = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         await Doctor.findById(req.user.id, async (err, doctor) => {
-          if (err) {
+          if (!doctor) {
             res.json({ msg: "No se encontró al doctor" });
           } else {
             await Cita.findById(req.body.id_cita, async (err, cita) => {
-              if (err) {
+              if (!cita) {
                 res.json({ msg: "No se encontró la cita" });
               } else {
-                await User.findById(cita.user, async (err, paciente) => {
-                  if (err) {
-                    res.json({ msg: "No se encontró al paciente de la cita" });
-                  } else {
-                    try {
-                      /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
-                      const uploader = async (path)=> await cloudinary.uploads(path,'Firmas')
-                      console.log(req.file)
-                      const file = req.file
-                      const path = file.path
-                      const newUrl = await uploader(path)
-                      const firma_imagen = newUrl.url
-                      fs.unlinkSync(path)
-                      logger(chalk.green('url de imagen cargada: ')+newUrl.url)
-                      /*------------------V-----------*/
-                      var newreceta = new Receta({
-                        nombres_apellidos: paciente.name + " " + paciente.lastname,
-                        acto_medico: req.body.acto_medico,
-                        medicamentos: req.body.medicamentos,
-                        fecha_expedicion: req.body.fecha_expedicion,
-                        valida_hasta: req.body.valida_hasta,
-                        cita: req.body.cita,
-                        firma: firma_imagen
+                await Receta.findOne(
+                  { cita: cita._id },
+                  async (err, receta) => {
+                    if (!receta) {
+                      await User.findById(cita.user, async (err, paciente) => {
+                        if (err) {
+                          res.json({
+                            msg: "No se encontró al paciente de la cita",
+                          });
+                        } else {
+                          try {
+                            /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
+                            const uploader = async (path) =>
+                              await cloudinary.uploads(path, "Firmas");
+                            console.log(req.file);
+                            const file = req.file;
+                            const path = file.path;
+                            const newUrl = await uploader(path);
+                            const firma_imagen = newUrl.url;
+                            fs.unlinkSync(path);
+                            logger(
+                              chalk.green("url de imagen cargada: ") +
+                                newUrl.url
+                            );
+
+                            
+                            /*------------------V-----------*/
+                            var newreceta = new Receta({
+                              nombres_apellidos:
+                                paciente.name + " " + paciente.lastname,
+                              acto_medico: req.body.acto_medico,
+                              medicamentos: req.body.medicamentos,
+                              fecha_expedicion: req.body.fecha_expedicion,
+                              valida_hasta: req.body.valida_hasta,
+                              cita: req.body.cita,
+                              firma: firma_imagen,
+                            });
+
+                            newreceta.cita = cita;
+                            await newreceta.save();
+
+                            cita.receta = newreceta;
+                            await cita.save();
+
+                            res.json({ msg: "Nueva receta guardada" });
+                          } catch (err) {
+                            res.json(err);
+                          }
+                        }
                       });
-
-                      newreceta.cita = cita;
-                      await newreceta.save();
-
-                      cita.receta = newreceta;
-                      await cita.save();
-
-                      res.json({ msg: "Nueva receta guardada" });
-                    } catch (err) {
-                      res.json(err);
+                    } else {
+                      res.json({ msg: "Ya existe una receta para esta cita." });
                     }
                   }
-                });
+                );
               }
             });
           }
         });
-        /*
-        await Cita.findById(req.body.id_cita, async (err, cita) => {
-          try {
-            if (err) {
-              logger(chalk.red("ERR ") + chalk.white("no se encontro la cita"));
-              logger(chalk.red("ERR ") + chalk.white(err));
-              res.send({ msg: "cita no colocada" });
-            } else {
-              await User.findById(cita.user, async (err, paciente) => {
-                try {
-                  var newreceta = new Receta({
-                    nombres_apellidos: paciente.name + paciente.lastname,
-                    acto_medico: req.body.acto_medico,
-                    medicamento: req.body.medicamento,
-                    concentracion: req.body.concentracion,
-                    dosis_frecuencia: req.body.dosis_frecuencia,
-                    duracion: req.body.duracion,
-                    cantidad: req.body.cantidad,
-                    fecha_expedicion: req.body.fecha_expedicion,
-                    valida_hasta: req.body.valida_hasta,
-                    cita: cita,
-                  });
-                } catch (error) {
-                  logger(chalk.red("ERROR: ") + chalk.white(error));
-                  res.send({ msg: "ERROR: " + error });
-                }
-                cita.receta = newreceta;
-                await cita.save();
-              });
-            }
-          } catch (error) {
-            logger(chalk.red("ERROR: ") + chalk.white(error));
-            res.send({ msg: "ERROR: " + error });
-          }
-        });
-        */
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
@@ -856,9 +842,6 @@ exports.Crear_Nueva_Receta = async function (req, res) {
     res.send({ msg: "ERROR: " + err });
   }
 };
-
-
-
 
 getToken = function (headers) {
   if (headers && headers.authorization) {
@@ -885,19 +868,23 @@ exports.listar = async function (req, res) {
   }
 };
 
-
-
 exports.probandoMeterMedicamentos = function (req, res) {
-  logger(req.body.medicamento)
+  logger(req.body.medicamento);
   const receta = new Receta({
-    nombres_apellidos:paciente.name + paciente.lastname,
+    nombres_apellidos: paciente.name + paciente.lastname,
     acto_medico: req.body.acto_medico,
     medicamentos: req.body.medicamentos,
     fecha_expedicion: req.body.fecha_expedicion,
     valida_hasta: req.body.valida_hasta,
     cita: req.body.cita,
-  })
-  receta.save()
-  logger('receta: \n'+"medicamento 1 "+receta.medicamentos[0].medicamento+"\nmedicamento 2 "+receta.medicamentos[1].medicamento)
-  res.json(receta)
-}
+  });
+  receta.save();
+  logger(
+    "receta: \n" +
+      "medicamento 1 " +
+      receta.medicamentos[0].medicamento +
+      "\nmedicamento 2 " +
+      receta.medicamentos[1].medicamento
+  );
+  res.json(receta);
+};
