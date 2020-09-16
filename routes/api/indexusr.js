@@ -50,6 +50,9 @@ router.get('/user/cita/ver_receta/:id',passport.authenticate('user', { session: 
 // Agregar detalle de sintomas a una cita
 router.post('/user/cita/registrar_sintomas/:id',passport.authenticate('user', { session: false}),citaController.Registrar_Sintomas);
 
+//Ver mi diagnostico de una cita
+router.get('/user/cita/ver_diagnostico/:id',passport.authenticate('user', { session: false}),citaController.Ver_Diagnostico_Paciente);
+
 //ENDPOINT PARA DEPENDIENTE-------------------------------
 //agregar nuevo dependite
 router.post('/user/dependiente/agregar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Agregar_Dependiente);

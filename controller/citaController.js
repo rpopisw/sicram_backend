@@ -5,6 +5,7 @@ var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var Receta = require("../models/receta");
+var Diagnostico = require("../models/diagnostico");
 var optk = require("../tools/opentok");
 const chalk = require("chalk");
 const loggerwin = require("../utils/logger_winston.js");
@@ -330,55 +331,71 @@ exports.Actualizar_Citas = async function (req, res) {
                                           } else {
                                             await Especialidad.findOne(
                                               {
-                                                especialidad: req.body.especialidad,
+                                                especialidad:
+                                                  req.body.especialidad,
                                               },
                                               async (err, especialidad) => {
-                                                if(!especialidad){
-                                                  res.json({msg:"Nueva especialidad no encontrada"});
-                                                }else{
+                                                if (!especialidad) {
+                                                  res.json({
+                                                    msg:
+                                                      "Nueva especialidad no encontrada",
+                                                  });
+                                                } else {
                                                   if (
                                                     doctor2.especialidad.equals(
                                                       especialidad._id
                                                     )
                                                   ) {
-                                                      await Horario.findOne({
-                                                        fecha:
-                                                          req.body.fecha,
+                                                    await Horario.findOne(
+                                                      {
+                                                        fecha: req.body.fecha,
                                                         hora_inicio:
-                                                          req.body
-                                                            .hora_inicio,
+                                                          req.body.hora_inicio,
                                                         hora_fin:
                                                           req.body.hora_fin,
                                                         doctor: doctor2,
-                                                      }, async(err,horario)=>{
-                                                        if(!horario){
-                                                          res.json({msg:"El horario introducido no existe"});
-                                                        }else{
-                                                          if(horario.ocupado==true){
-                                                            res.json({msg:"El horario se encuentra ocupado"});
-                                                          }else{
+                                                      },
+                                                      async (err, horario) => {
+                                                        if (!horario) {
+                                                          res.json({
+                                                            msg:
+                                                              "El horario introducido no existe",
+                                                          });
+                                                        } else {
+                                                          if (
+                                                            horario.ocupado ==
+                                                            true
+                                                          ) {
+                                                            res.json({
+                                                              msg:
+                                                                "El horario se encuentra ocupado",
+                                                            });
+                                                          } else {
                                                             cita.doctor = doctor2;
                                                             cita.especialidad = especialidad;
                                                             cita.horario = horario;
                                                             await cita.save();
 
-                                                            horario.ocupado=true;
+                                                            horario.ocupado = true;
                                                             await horario.save();
 
-                                                            res.json({msg:"Cita actualizada"});
+                                                            res.json({
+                                                              msg:
+                                                                "Cita actualizada",
+                                                            });
                                                           }
                                                         }
-                                                       });
-
-
-
-                                                  }else{
-                                                    res.json({msg:"El doctor no existe en la especialidad"})
+                                                      }
+                                                    );
+                                                  } else {
+                                                    res.json({
+                                                      msg:
+                                                        "El doctor no existe en la especialidad",
+                                                    });
                                                   }
                                                 }
                                               }
                                             );
-                                            
                                           }
                                         } catch (err) {
                                           res.json(err);
@@ -440,42 +457,51 @@ exports.Eliminar_cita = async function (req, res) {
       if (req.user.id == req.params.id) {
         //encontramos la cita por su codigo
         await Cita.findOne({ _id: req.body.id_cita }, async (error, cita) => {
-          if (error) {
+          if (!cita) {
             res.json({ msg: "cita no encontrada" });
           } else {
-            const paciente = await User.findOne({ _id: req.params.id });
-            const pacientes_cita_tmp = paciente.cita;
-            const find_index = pacientes_cita_tmp.indexOf(req.body.id_cita);
-            pacientes_cita_tmp.splice(find_index, 1);
+            await User.findById(cita.user, async (err, paciente) => {
+              if (!paciente) {
+                res.json({ msg: "No se encuentra al paciente de la cita" });
+              } else {
+                await Doctor.findById(cita.doctor, async (err, doctor) => {
+                  if (!doctor) {
+                    res.json({ msg: "Doctor de cita no encontrado" });
+                  } else {
+                    await Horario.findById(
+                      cita.horario,
+                      async (err, horario) => {
+                        if (!horario) {
+                          res.json({
+                            msg: "No se encuentra el horario de la cita",
+                          });
+                        } else {
+                          //Encuentro la cita dentro del paciente y la borro
+                          const index = paciente.cita.indexOf(cita._id);
 
-            await paciente.updateOne(
-              { _id: req.params.id },
-              { $set: { cita: pacientes_cita_tmp } }
-            );
+                          paciente.cita.splice(index, 1);
+                          await paciente.save();
+                          //Encuentro la cita dentro del doctor y la borro
+                          const indexdoctor = doctor.cita.indexOf(cita._id);
 
-            const doctor = await Doctor.findOne({ _id: cita.doctor });
-            const doctor_cita_tmp = doctor.cita;
-            const find_index_doctor = doctor_cita_tmp.indexOf(req.body.id_cita);
-            doctor_cita_tmp.splice(find_index_doctor, 1);
+                          doctor.cita.splice(indexdoctor, 1);
+                          await doctor.save();
 
-            //desocupando horario de cita eliminada
-            const horario = await Horario.findOne({ cita: cita._id });
-            horario.ocupado = false;
-            horario.cita = null;
-            horario.save();
-            logger("se elimina la cita LUEGO");
-           
-            await doctor.updateOne(
-              { _id: cita.doctor },
-              { $set: { cita: doctor_cita_tmp } }
-            );
+                          //Ahora que las citas están borradas cambio el horario por desocupado
+                          horario.ocupado = false;
+                          horario.cita = null;
+                          await horario.save();
 
-            await cita.remove();
-            paciente.save();
-            doctor.save();
+                          //Ahora elimino el documento cita de la colección
+                          await cita.remove();
 
-            res.json({
-              msg: "cita eliminada"
+                          res.json({ msg: "Cita eliminada" });
+                        }
+                      }
+                    );
+                  }
+                });
+              }
             });
           }
         });
@@ -659,6 +685,241 @@ exports.Registrar_Sintomas = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
+    res.json(err);
+  }
+};
+
+exports.Registrar_Diagnostico = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (err) {
+            res.json({ msg: "No se encontró al doctor" });
+          } else {
+            await Cita.findById(req.body.id_cita, async (err, cita) => {
+              if (err) {
+                res.json({ msg: "No se encontró la cita" });
+              } else {
+                await Diagnostico.findOne({cita:cita._id}, async (err, diagnostico) => {
+                  if (!diagnostico) {
+                    await Horario.findById(
+                      cita.horario,
+                      async (err, horario) => {
+                        if (err) {
+                          res.json({
+                            msg: "No se encuentra un horario para esta cita",
+                          });
+                        } else {
+                          await User.findById(
+                            cita.user,
+                            async (err, paciente) => {
+                              if (err) {
+                                res.json({
+                                  msg: "No se encontró al paciente de la cita",
+                                });
+                              } else {
+                                try {
+                                  var newdiagnostico = new Diagnostico({
+                                    dni: paciente.dni,
+                                    nombres_apellidos:
+                                      paciente.name + " " + paciente.lastname,
+                                    genero: paciente.genero,
+                                    fecha: horario.fecha,
+                                    edad: paciente.edad,
+                                    diagnostico: req.body.diagnostico,
+                                    resultados_labo: req.body.resultados_labo,
+                                    tratamiento: req.body.tratamiento,
+                                  });
+
+                                  newdiagnostico.cita = cita;
+                                  newdiagnostico.user = paciente;
+                                  await newdiagnostico.save();
+                                  //Introducimos el diagnostico a la cita
+                                  cita.diagnostico = newdiagnostico;
+                                  await cita.save();
+
+                                  paciente.diagnostico.push(newdiagnostico);
+                                  await paciente.save();
+                                  res.json({
+                                    msg: "Nuevo diagnóstico guardado",
+                                  });
+                                } catch (err) {
+                                  res.json(err);
+                                }
+                              }
+                            }
+                          );
+                        }
+                      }
+                    );
+                  } else {
+                    res.json({msg: "Ya existe un diagnóstico para esta cita"});
+                  }
+                });
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "ERROR: " + err });
+  }
+};
+
+exports.Ver_Diagnostico_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Diagnostico.findById(
+              cita.diagnostico,
+              async (err, diagnostico) => {
+                if (err) {
+                  res.json({
+                    msg: "No se encontró un diagnóstico para esta cita",
+                  });
+                } else {
+                  res.json(diagnostico);
+                }
+              }
+            );
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//El medico puede ver el historial de diagnosticos de un paciente en plena cita
+exports.Ver_Historial_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await User.findById(cita.user, async (err, paciente) => {
+              if (err) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                await Diagnostico.find(
+                  { user: paciente },
+                  async (err, diagnosticos) => {
+                    if (err) {
+                      res.json({
+                        msg:
+                          "No se encontraron diagnósticos para este paciente",
+                      });
+                    } else {
+                      res.json(diagnosticos);
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//Que el médico vea el diagnostico de cada cita pasada que tenga
+exports.Ver_diagnostico_doctor=async function(req,res){
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Diagnostico.findById(cita.diagnostico, async (err, diagnostico) => {
+              if (err) {
+                res.json({ msg: "No se encontró el diagnóstico de esta cita" });
+              } else {
+                res.json(diagnostico);
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
     res.json(err);
   }
 };

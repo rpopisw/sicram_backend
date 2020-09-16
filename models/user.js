@@ -55,6 +55,10 @@ var UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Cita'
   }],
+  diagnostico:[{
+    type:Schema.Types.ObjectId,
+    ref: 'Diagnostico'
+    }],
   dependiente:[{
       type:Schema.Types.ObjectId,
       ref: 'Dependiente'

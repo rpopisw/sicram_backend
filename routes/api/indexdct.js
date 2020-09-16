@@ -51,7 +51,15 @@ router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session
 //ver receta que el medico receto a un paciente
 router.get('/doctor/receta/ver_receta/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_receta_doctor)
 
+//AGREGAR DIAGNOSTICO AL PACIENTE
+router.post('/doctor/cita/registrar_diagnostico/:id',passport.authenticate('doctor', { session: false}),citaController.Registrar_Diagnostico)
 
+// VER HISTORIAL DE DIAGNOSTICOS/HISTORIAL MEDICO DEL PACIENTE EN UNA CITA
+router.get('/doctor/cita/ver_historial_de_paciente/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_Historial_Paciente)
+
+
+// VER DIAGNOSTICO DE ALGUNA CITA PASADa
+router.get('/doctor/diagnostico/ver_diagnostico/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_diagnostico_doctor)
 
 //para la prueba
 router.get('/doctor/listar',doctorController.listar)

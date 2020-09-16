@@ -747,6 +747,7 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                         fecha_expedicion: req.body.fecha_expedicion,
                         valida_hasta: req.body.valida_hasta,
                         cita: req.body.cita,
+                        firma: req.file
                       });
 
                       newreceta.cita = cita;
