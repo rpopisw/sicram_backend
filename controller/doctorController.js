@@ -16,6 +16,10 @@ const loggerwin = require("../utils/logger_winston.js");
 const horario = require("../models/horario");
 const logger = console.log;
 
+//para agregar en cloudinary nuestras imagenes
+const cloudinary =require("../tools/cloudinary")
+const fs = require("fs")
+
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
   try {
@@ -644,7 +648,7 @@ exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
             res.json(cita)
           }
         }).populate('user').populate('doctor')
-        
+
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
@@ -779,6 +783,16 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                     res.json({ msg: "No se encontró al paciente de la cita" });
                   } else {
                     try {
+                      /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
+                      const uploader = async (path)=> await cloudinary.uploads(path,'Firmas')
+                      console.log(req.file)
+                      const file = req.file
+                      const path = file.path
+                      const newUrl = await uploader(path)
+                      const firma_imagen = newUrl.url
+                      fs.unlinkSync(path)
+                      logger(chalk.green('url de imagen cargada: ')+newUrl.url)
+                      /*------------------V-----------*/
                       var newreceta = new Receta({
                         nombres_apellidos: paciente.name + " " + paciente.lastname,
                         acto_medico: req.body.acto_medico,
@@ -786,7 +800,7 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                         fecha_expedicion: req.body.fecha_expedicion,
                         valida_hasta: req.body.valida_hasta,
                         cita: req.body.cita,
-                        firma: req.file
+                        firma: firma_imagen
                       });
 
                       newreceta.cita = cita;

@@ -11,11 +11,11 @@ const mailer = require("../mail/mediador_mailer")
 const Doctor = require("../models/doctor")
 const Organizacion = require("../models/organizacion");
 
-const Receta = require("../models/receta")
 
-//multer
-const upload = require("../libs/storage")
 
+//para agregar en cloudinary nuestras imagenes
+const cloudinary =require("../tools/cloudinary")
+const fs = require("fs")
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
@@ -226,11 +226,19 @@ exports.probandomailer = function (req, res) {
 }
 
 //probando multeral
-exports.probandomulter = function (req, res) {
-    const receta = new Receta({
-      firma: req.file.path,
-    })
-    console.log(req.file)
+exports.probandomulter = async function (req, res) {
+    const uploader = async (path)=> await cloudinary.uploads(path,'Images')
 
+    console.log(req.file)
+    const file = req.file
+    const path = file.path
+
+    const newUrl = await uploader(path)
+    fs.unlinkSync(path)
+    
+    const receta = new Receta({
+      firma:newUrl.url,
+    })
+    
     res.json(receta)
 }

@@ -6,6 +6,9 @@ var doctorController = require("../../controller/doctorController");
 var citaController = require('../../controller/citaController');
 const { route } = require('./indexusr');
 
+//para ingresar la imgane con multer
+const upload = require('../../libs/storage')
+
 router.get('/',function (req,res) {
   res.render("index",{title:"SICRAM"}); 
 });
@@ -48,7 +51,7 @@ router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session:
 //datos iniciales de la nueva receta
 router.get('/doctor/receta/datos/:id',passport.authenticate('doctor', { session: false}),doctorController.Enviar_Datos_Nueva_Receta)
 //crear nueva receta
-router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),doctorController.Crear_Nueva_Receta)
+router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),upload.single('firma_imagen'),doctorController.Crear_Nueva_Receta)
 //ver receta que el medico receto a un paciente
 router.get('/doctor/receta/ver_receta/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_receta_doctor)
 
