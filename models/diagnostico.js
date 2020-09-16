@@ -8,6 +8,9 @@ var DiagnosticoSchema= new Schema({
     nombres_apellidos:{
         type:String
     },
+    nombres_medico:{
+        type: String
+    },
     genero:{
         type: String
     },
@@ -24,6 +27,9 @@ var DiagnosticoSchema= new Schema({
         type: String,
     },
     tratamiento:{
+        type: String
+    },
+    anamnesis:{
         type: String
     },
     user:{

@@ -723,14 +723,15 @@ exports.Registrar_Diagnostico = async function (req, res) {
                                 try {
                                   var newdiagnostico = new Diagnostico({
                                     dni: paciente.dni,
-                                    nombres_apellidos:
-                                      paciente.name + " " + paciente.lastname,
+                                    nombres_apellidos: paciente.name + " " + paciente.lastname,
                                     genero: paciente.genero,
                                     fecha: horario.fecha,
+                                    nombres_medico: doctor.name+" "+doctor.lastname,
                                     edad: paciente.edad,
                                     diagnostico: req.body.diagnostico,
                                     resultados_labo: req.body.resultados_labo,
                                     tratamiento: req.body.tratamiento,
+                                    anamnesis: req.body.anamnesis,
                                   });
 
                                   newdiagnostico.cita = cita;
