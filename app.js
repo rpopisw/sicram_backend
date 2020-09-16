@@ -12,6 +12,8 @@ var usersRouter = require('./routes/users');
 var opentokApiRouter = require('./routes/api/opentk')
 var passport =  require('passport');
 
+var multer = require('multer')
+var uploads = multer()
 
 
 //inicializaciones
@@ -23,6 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Middlerware
+app.use(uploads.array()); 
 app.use('/storage',express.static('storage'))
 
 //habilitando cors:
