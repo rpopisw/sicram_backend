@@ -21,6 +21,7 @@ require('./config/userpassport');
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 //Middlerware
 app.use('/storage',express.static('storage'))
 

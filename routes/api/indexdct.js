@@ -40,7 +40,7 @@ router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { ses
 //listar citas pendientes
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
 //obtener detalles de una cita de un paciente
-router.get('/doctor/cita/detalle/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Detalles_De_Cita_De_Un_Paciente)
+router.get('/doctor/cita/detalle/:id',doctorController.Obtener_Detalles_De_Cita_De_Un_Paciente)
 
 
 

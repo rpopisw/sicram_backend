@@ -228,11 +228,10 @@ exports.probandomailer = function (req, res) {
 //probando multeral
 exports.probandomulter = async function (req, res) {
     const uploader = async (path)=> await cloudinary.uploads(path,'Images')
-
     console.log(req.file)
     const file = req.file
     const path = file.path
-
+  
     const newUrl = await uploader(path)
     fs.unlinkSync(path)
     
