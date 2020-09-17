@@ -371,12 +371,18 @@ exports.Actualizar_Citas = async function (req, res) {
                                                                 "El horario se encuentra ocupado",
                                                             });
                                                           } else {
+
+                                                            horario1.ocupado=false;
+                                                            horario1.cita=null;
+                                                            await horario1.save();
+                                                            
                                                             cita.doctor = doctor2;
                                                             cita.especialidad = especialidad;
                                                             cita.horario = horario;
                                                             await cita.save();
 
                                                             horario.ocupado = true;
+                                                            horario.cita=cita;
                                                             await horario.save();
 
                                                             res.json({
