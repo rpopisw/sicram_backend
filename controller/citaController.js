@@ -883,7 +883,7 @@ exports.Ver_Historial_Paciente = async function (req, res) {
                 await Diagnostico.find(
                   { user: paciente },
                   async (err, diagnosticos) => {
-                    if (err) {
+                    if (!diagnosticos) {
                       res.json({
                         msg:
                           "No se encontraron diagnósticos para este paciente",
