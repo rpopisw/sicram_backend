@@ -272,7 +272,7 @@ exports.Eliminar_horario_doctor = async function (req, res) {
                       msg: "Horario no pertenece a horarios del doctor",
                     });
                   } else {
-                    logger("horario esta ocupado? :" + horario.ocupado);
+                    
                     if (horario.ocupado == false) {
                       horarios_doctor.splice(indice_temp_horario, 1);
                       doctor.save();
