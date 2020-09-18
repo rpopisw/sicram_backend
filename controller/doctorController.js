@@ -644,6 +644,49 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
+exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
+        await Cita.find({ doctor: req.user.id, estado: 'atendido' }, (err, citas) => {
+          if (!citas) {
+            logger(chalk.red("CITAs atendidas NO ENCONTRADA"));
+            res.json({ msg: "No cuenta con citas atendidas" });
+          } else {
+            logger(
+              chalk.blue("CITAS ATENDIDAS ENCONTRADAS: ") + chalk.magenta(citas.length)
+            );
+            res.status(200).json(citas);
+          }
+        })
+          .populate("horario")
+          .populate("especialidad")
+          .populate("doctor")
+          .populate("user");
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+  }
+};
 
 //obtener detalles de la cita de un paciente por parte del doctor de
 exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
