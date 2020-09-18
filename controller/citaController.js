@@ -120,8 +120,19 @@ exports.GenerarNuevaCita = async function (req, res) {
                                     });
                                   });
                                   mailer.notificarNuevaCita(
-                                    `HOLA ${doctor.name}, ${doctor.lastname} USTED TIENE UNA NUEVA CITA PROGRAMADA\n CON PACIENTE: ${paciente.name}, ${paciente.lastname}
-                                  \nEN EL SIGUIENTE HORARIO:\n FECHA: ${horario.fecha}\n HORA INICIO: ${horario.hora_inicio}\n HORA FIN: ${horario.hora_fin} `,
+                                  `Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+                                  reciba nuestros cordiales saludos\n
+                                  le informamos que TIENE UNA NUEVA CITA PROGRAMADA\n
+                                  Detalles de su nueva cita:\n
+                                  paciente: ${paciente.lastname}, ${paciente.username}\n
+                                  dni: ${paciente.dni}\n
+                                  fecha: ${horario.fecha}\n
+                                  hora de inicio: ${horario.hora_inicio}\n
+                                  hora de finalizacion: ${horario.hora_fin}\n
+                                  
+                                  Gracias Doctor ${doctor.lastname} su paciente estara atento para ingresar a la sala virtual en la fecha y hora indicada.
+                                  \n
+                                  Saludos Atentamente: SICRAM `,
                                     doctor
                                   );
                                   //agregamos la cita para el usuario.
@@ -384,7 +395,7 @@ exports.Actualizar_Citas = async function (req, res) {
                                                             horario.ocupado = true;
                                                             horario.cita=cita;
                                                             await horario.save();
-
+                                                            mailer.notificarActualizacionDeCita(doctor,doctor2,paciente,horario1,horario);      
                                                             res.json({
                                                               msg:
                                                                 "Cita actualizada",
@@ -497,6 +508,20 @@ exports.Eliminar_cita = async function (req, res) {
                           horario.ocupado = false;
                           horario.cita = null;
                           await horario.save();
+                          mailer.notificarEliminacionDeCita(
+                          `Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+                          reciba nuestros cordiales saludos\n
+                          le informamos que el paciente ${paciente.lastname} ${paciente.username} elimino su cita programada con usted\n
+                          Detalles de la cita:
+                          paciente: ${paciente.lastname}, ${paciente.username}
+                          dni: ${paciente.dni}
+                          fecha: ${horario.fecha}\n
+                          hora de inicio: ${horario.hora_inicio}\n
+                          hora de finalizacion: ${horario.hora_fin}\n
+                          
+                          Recuerde Doctor ${doctor.lastname} que el horario de esta cita eliminada ahora esta disponible para que otro paciente pueda tomarla.
+                          \n
+                          Saludos Atentamente: SICRAM `,doctor)
 
                           //Ahora elimino el documento cita de la colección
                           await cita.remove();

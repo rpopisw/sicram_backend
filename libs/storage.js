@@ -9,12 +9,12 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
       cb(null, 'imagen'+'-'+Date.now()+file.originalname)
     },
-
+    
   })
 
 var fileFilter = function (req, file, cb) {
 
-    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/jpeg') {
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
          console.log('se guardo la imagen')
           return cb(null, true);
       }

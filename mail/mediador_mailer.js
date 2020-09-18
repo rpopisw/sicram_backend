@@ -51,7 +51,7 @@ Mediador_mailer.notificarNuevaCita = (msg,usuario)=>{
         usuario.recibirMensaje(msg,asunto)
     }
 }
-Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,paciente)=>{
+Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,paciente,horario1,horario)=>{
     const asunto_update = 'SICRAM: ACTUALIZACION DE CITA'
     const asunto_eliminado = 'SICRAM: ACTUALIZACION DE CITA'
     const asunto_nuevo = 'SICRAM: ELIMINACION DE CITA'
@@ -59,10 +59,50 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
     if(doctorActual instanceof Doctor){
         console.log("enviando notificacion a correo DOCTOR: ")
         if (doctorActual._id==doctorNuevo._id) {
-            doctorActual.recibirMensaje(`Su paciente ${paciente.name},${paciente.lastname} \n actualizo su cita`,asunto_update)
+            doctorActual.recibirMensaje(`
+            Hola Doctor ${doctorActual.lastname}, ${doctorActual.name} \n
+            reciba nuestros cordiales saludos\n
+            Su paciente ${paciente.name},${paciente.lastname} actualizo su cita\n\n
+            Detalles de la cita antes de ser actualizada:\n
+            paciente: ${paciente.lastname}, ${paciente.username}\n
+            dni: ${paciente.dni}\n
+            fecha: ${horario1.fecha}\n
+            hora de inicio: ${horario1.hora_inicio}\n
+            hora de finalizacion: ${horario1.hora_fin}\n\n
+            Ahora su cita tiene esta informacion:\n
+            paciente: ${paciente.lastname}, ${paciente.username}\n
+            dni: ${paciente.dni}\n
+            fecha: ${horario.fecha}\n
+            hora de inicio: ${horario.hora_inicio}\n
+            hora de finalizacion: ${horario.hora_fin}\n
+            `,asunto_update)
         }else{
-            doctorActual.recibirMensaje(`Su paciente ${paciente.name},${paciente.lastname} \n elimino su cita`,asunto_eliminado)
-            doctorNuevo.recibirMensaje(`El paciente ${paciente.name},${paciente.lastname} \n creo una nueva cita`,asunto_nuevo)
+            doctorActual.recibirMensaje(`
+            Hola Doctor ${doctorActual.lastname}, ${doctorActual.name} \n
+            reciba nuestros cordiales saludos\n
+            le informamos que el paciente ${paciente.lastname} ${paciente.username} elimino su cita programada con usted\n
+            Detalles de la cita:
+            paciente: ${paciente.lastname}, ${paciente.username}
+            dni: ${paciente.dni}
+            fecha: ${horario1.fecha}\n
+            hora de inicio: ${horario1.hora_inicio}\n
+            hora de finalizacion: ${horario1.hora_fin}\n            
+            Recuerde Doctor ${doctorActual.lastname} que el horario de esta cita eliminada ahora esta disponible para que otro paciente pueda tomarla.
+            \n
+            Saludos Atentamente: SICRAM`,asunto_eliminado)
+            doctorNuevo.recibirMensaje(`
+            Hola Doctor ${doctorNuevo.lastname}, ${doctorNuevo.name} \n
+            reciba nuestros cordiales saludos\n
+            le informamos que TIENE UNA NUEVA CITA PROGRAMADA\n
+            Detalles de su nueva cita:\n
+            paciente: ${paciente.lastname}, ${paciente.username}\n
+            dni: ${paciente.dni}\n
+            fecha: ${horario.fecha}\n
+            hora de inicio: ${horario.hora_inicio}\n
+            hora de finalizacion: ${horario.hora_fin}\n                    
+            Gracias Doctor ${doctorNuevo.lastname} su paciente estara atento para ingresar a la sala virtual en la fecha y hora indicada.
+            \n
+            Saludos Atentamente: SICRAM `,asunto_nuevo)
         }
     }
 }
