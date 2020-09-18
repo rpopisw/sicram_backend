@@ -78,7 +78,7 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
             `,asunto_update)
         }else{
             doctorActual.recibirMensaje(`
-            Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+            Hola Doctor ${doctorActual.lastname}, ${doctorActual.name} \n
             reciba nuestros cordiales saludos\n
             le informamos que el paciente ${paciente.lastname} ${paciente.username} elimino su cita programada con usted\n
             Detalles de la cita:
@@ -87,11 +87,11 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
             fecha: ${horario1.fecha}\n
             hora de inicio: ${horario1.hora_inicio}\n
             hora de finalizacion: ${horario1.hora_fin}\n            
-            Recuerde Doctor ${doctor.lastname} que el horario de esta cita eliminada ahora esta disponible para que otro paciente pueda tomarla.
+            Recuerde Doctor ${doctorActual.lastname} que el horario de esta cita eliminada ahora esta disponible para que otro paciente pueda tomarla.
             \n
             Saludos Atentamente: SICRAM`,asunto_eliminado)
             doctorNuevo.recibirMensaje(`
-            Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+            Hola Doctor ${doctorNuevo.lastname}, ${doctorNuevo.name} \n
             reciba nuestros cordiales saludos\n
             le informamos que TIENE UNA NUEVA CITA PROGRAMADA\n
             Detalles de su nueva cita:\n
@@ -100,7 +100,7 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
             fecha: ${horario.fecha}\n
             hora de inicio: ${horario.hora_inicio}\n
             hora de finalizacion: ${horario.hora_fin}\n                    
-            Gracias Doctor ${doctor.lastname} su paciente estara atento para ingresar a la sala virtual en la fecha y hora indicada.
+            Gracias Doctor ${doctorNuevo.lastname} su paciente estara atento para ingresar a la sala virtual en la fecha y hora indicada.
             \n
             Saludos Atentamente: SICRAM `,asunto_nuevo)
         }
