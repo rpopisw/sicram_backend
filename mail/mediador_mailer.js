@@ -58,7 +58,7 @@ Mediador_mailer.notificarActualizacionDeCita = (doctorActual,doctorNuevo,pacient
     
     if(doctorActual instanceof Doctor){
         console.log("enviando notificacion a correo DOCTOR: ")
-        if (doctorActual._id==doctorNuevo._id) {
+        if (doctorActual.id==doctorNuevo.id) {
             doctorActual.recibirMensaje(`
             Hola Doctor ${doctorActual.lastname}, ${doctorActual.name} \n
             reciba nuestros cordiales saludos\n
