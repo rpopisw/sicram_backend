@@ -959,6 +959,80 @@ exports.Ver_diagnostico_doctor=async function(req,res){
   }
 };
 
+//Ingreso a la cita
+exports.Ingresar_a_cita = async function (req, res) {
+  try {
+    /*var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {*/
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Horario.findById(cita.horario,(err,horario)=>{
+              if(!horario){
+                res.json({ msg: "Horario no encontrado" });
+              }else{
+                //fecha actual
+                const fecha_comparacion = new Date()
+                const mes = fecha_comparacion.getMonth()+1
+                const dia = fecha_comparacion.getDate()
+                const hora = fecha_comparacion.getHours()
+                //fecha de cita
+                const dia_cita = horario.fecha[0]+horario.fecha[1]
+                const dia_cita_eval = parseInt(dia_cita,10)
+                const mes_cita = horario.fecha[3]+horario.fecha[4]
+                const mes_cita_eval = parseInt(mes_cita,10)
+                const hora_inicio_cita = horario.hora_inicio[0]+horario.hora_inicio[1]
+                const hora_inicio_cita_eval = parseInt(hora_inicio_cita,10)
+                const hora_fin_cita = horario.hora_fin[0]+horario.hora_fin[1]
+                const hora_fin_cita_eval = parseInt(hora_fin_cita,10)
+                logger('\nmes_cita: '+mes_cita_eval+'\nhora_inicio_cita: '+hora_inicio_cita_eval+'\nhora_fin_cita: '+hora_inicio_cita_eval+'\ndia_cita: '+dia_cita);
+                /*PRUEBA DE COMPRACION
+                const mes_cita_eval1 =9
+                const dia_cita_eval1 =23
+                const hora_inicio_cita_eval1 =1
+                const hora_fin_cita_eval1 = 2*/
+                logger('\nmes_actual: '+mes+'\ndia_actual: '+dia+'\nhora_actual: '+hora);
+                //evaluacion de fecha para ingresar a la cita--------------------------------
+                if (mes==mes_cita_eval && dia==dia_cita_eval) {
+                  if(hora>=hora_inicio_cita_eval && hora<=hora_fin_cita_eval){
+                    res.json({ msg: "puede entrar a su cita", ingreso:true });
+                  }else{
+                    res.json({ msg: "no es la hora de  su cita", ingreso:false });
+                  }
+                }else{
+                  res.json({ msg: "no es el dia de su cita", ingreso:false });
+                }
+
+              }
+            })
+          }
+        });
+       /* } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }*/
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+}
+
+
+
 //metodo para confirmar que entro un token
 getToken = function (headers) {
   if (headers && headers.authorization) {
@@ -973,3 +1047,5 @@ getToken = function (headers) {
     return null;
   }
 };
+
+
