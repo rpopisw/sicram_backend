@@ -32,5 +32,7 @@ router.post('/organizacion/doctor/horario/asignar/:id',passport.authenticate('or
 //eliminar doctor de la organizacion
 router.post('/organizacion/doctor/eliminar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Eliminar_Doctor)
 
+//ESTADISTICA
+router.get('/organizacion/doctor/estadistica/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Generar_Estadistica_Doctor)
 
 module.exports = router;

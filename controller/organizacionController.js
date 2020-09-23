@@ -560,6 +560,54 @@ exports.Eliminar_Doctor = async function (req, res) {
   }
 }
 
+exports.Generar_Estadistica_Doctor = async function (req, res) {
+  try {
+    console.log(req.headers)
+    var token = getToken(req.headers);
+      if (token) {
+        //TODO
+      if (req.user.id == req.params.id) {
+        await Doctor.find({organizacion:req.user.id},(err,doctor)=>{
+          if (err){
+            //si hay un error en la busqueda
+            logger(chalk.red("ERR: ") + chalk.white(err));
+            res.status(401).json({ msg: "ERR: "+err });
+          }else{
+            //ahora enviamos el docotor
+            var estadistica = []
+            logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(doctor.length));
+            doctor.forEach(doc => {
+              logger('nombre doctor: '+doc.username+'cantidad citas doctor:'+doc.cita.length)
+              estadistica.push({doctor:doc.username.toUpperCase()+' '+doc.lastname,cantidad_citas:doc.cita.length})
+              logger('ESTADISTICA:\n'+estadistica)
+            });
+            res.json(estadistica);
+          }
+        }).populate('especialidad')
+      } else {
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+      }
+      } else {
+        return res.status(403).send({ success: false, msg: "Unauthorized." });
+      }
+  }catch (e) {
+    loggerwin.info(e);
+    logger(chalk.red("ERR  ") + chalk.white(e));
+  }
+}
+
+
 //metodo para confirmar que entro un token
 getToken = function (headers) {
   if (headers && headers.authorization) {
