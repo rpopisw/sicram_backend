@@ -5,7 +5,7 @@ const mailconfig = {
     service: 'gmail',
     auth: {
         user: 'sicram.empresa@gmail.com',
-        pass: 'eqfztkxxspknplgj'
+        pass: 'itqzcunkiqawgine'
     }
 }
 
