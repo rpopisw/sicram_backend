@@ -2,27 +2,45 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var RecetaSchema = new Schema({
-    medicina:{
-        type: Array,
+   
+    dni:{
+        type:String,
     },
-    indicaciones:{
-        type: String,
-    },  
-    nombredoctor:{
+    nombres_apellidos:{
+        type:String
+    },
+    acto_medico:{
+        type:String
+    },
+    medicamentos:[{
+        medicamento:{
+            type: String,
+        },
+        concentracion:{
+            type: String,
+        },  
+        dosis_frecuencia:{
+            type: String,
+        },
+        duracion:{
+            type: String,
+        },
+        cantidad:{
+            type: String,
+        }
+    }],
+    fecha_expedicion:{
         type: String,
     },
-    nombrepaciente:{
-        type: String,
-    },
-    horario:{
-        type: String,
-    },
-    fecha:{
+    valida_hasta:{
         type: String,
     },
     cita:{
         type: Schema.Types.ObjectId,
         ref: 'Cita'
+    },
+    firma:{
+        type:String
     }
 });
 

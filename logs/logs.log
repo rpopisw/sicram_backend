@@ -35,7 +35,22 @@ info: El auntenticacion del usuario fallo {"timestamp":"2020-09-10T04:07:36.781Z
 info: Options must be an object, got "12:00" {"timestamp":"2020-09-11T06:40:34.719Z"}
 info: Options must be an object, got "11:00" {"timestamp":"2020-09-11T06:45:52.514Z"}
 info: Autenticación de usuario fallida {"timestamp":"2020-09-11T17:28:31.165Z"}
+<<<<<<< HEAD
 info: Correcto {"timestamp":"2020-09-12T03:22:42.555Z"}
 info: Correcto {"timestamp":"2020-09-12T03:25:45.509Z"}
 info: Correcto {"timestamp":"2020-09-12T05:41:52.583Z"}
 info: Correcto {"timestamp":"2020-09-12T05:41:59.439Z"}
+=======
+info: estado is not defined {"timestamp":"2020-09-13T06:57:23.791Z"}
+info: path must be a string or object {"timestamp":"2020-09-13T06:57:48.650Z"}
+info: path must be a string or object {"timestamp":"2020-09-13T06:58:57.408Z"}
+info: estado is not defined {"timestamp":"2020-09-13T07:00:20.666Z"}
+info: "estado".equals is not a function {"timestamp":"2020-09-13T07:00:34.990Z"}
+info: false.populate is not a function {"timestamp":"2020-09-13T07:01:49.705Z"}
+info: "estado".equals is not a function {"timestamp":"2020-09-13T07:04:17.914Z"}
+info: "estado".equals is not a function {"timestamp":"2020-09-13T07:04:43.301Z"}
+info: Cast to ObjectId failed for value "452752" at path "_id" for model "Cita" {"stringValue":"\"452752\"","kind":"ObjectId","value":"452752","path":"_id","reason":{},"timestamp":"2020-09-16T04:32:13.494Z"}
+info: Cast to ObjectId failed for value "452752" at path "_id" for model "Cita" {"stringValue":"\"452752\"","kind":"ObjectId","value":"452752","path":"_id","reason":{},"timestamp":"2020-09-16T04:32:48.189Z"}
+info: El auntenticacion del usuario fallo {"timestamp":"2020-09-16T04:38:16.892Z"}
+info: El auntenticacion del usuario fallo : password incorrecto {"timestamp":"2020-09-16T04:38:36.989Z"}
+>>>>>>> 890903c2dc7ac6a4130cd05c751432df9247be51

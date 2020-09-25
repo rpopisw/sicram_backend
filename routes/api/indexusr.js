@@ -6,8 +6,8 @@ var userController = require("../../controller/usersCrontroller");
 var especialidadController = require("../../controller/especialidadController");
 var dependienteCotroller = require('../../controller/dependienteController');
 var citaController = require('../../controller/citaController');
-const { Router } = require('express');
-const { route } = require('./indexdct');
+
+const upload = require('../../libs/storage')
 
 
 router.get('/',function (req,res) {
@@ -25,13 +25,18 @@ router.get('/signoutuser', passport.authenticate('user', { session: false}), use
 router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obntener_datos_Paciente);
 //actualizar los datos del usuario logeado
 router.post('/user/perfil/update/:id',passport.authenticate('user', { session: false}),userController.Actualizar_datos_Paciente);
-
+//listar recetas de una cita
+router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obntener_datos_Paciente);
 
 //ENDPOINT PARA CITA-----------------------------------
 //crear nueva cita una vez logeado
 router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: false}),citaController.GenerarNuevaCita);
-//listar citas del usuario
+//listar citas pendientes del usuario
 router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
+
+//listar citas ocupadas del usuario
+router.get('/user/cita/listar_ocupadas/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Atendidas_Paciente);
+
 //elimar citas
 router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
 //actualizar citas
@@ -39,7 +44,14 @@ router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session:
 
 router.post('/user/cita/eliminar_prueba',citaController.Eliminar_cita_prueba);
 
+//Listar receta de una cita
+router.post('/user/cita/ver_receta/:id',passport.authenticate('user', { session: false}),citaController.Ver_receta_paciente);
 
+// Agregar detalle de sintomas a una cita
+router.post('/user/cita/registrar_sintomas/:id',passport.authenticate('user', { session: false}),citaController.Registrar_Sintomas);
+
+//Ver mi diagnostico de una cita
+router.post('/user/cita/ver_diagnostico/:id',passport.authenticate('user', { session: false}),citaController.Ver_Diagnostico_Paciente);
 
 //ENDPOINT PARA DEPENDIENTE-------------------------------
 //agregar nuevo dependite
@@ -66,6 +78,13 @@ router.get('/especialidad',especialidadController.Obtener_Especialidades);
 //obtener especialidades por doctor
 router.get('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
 
+
+//----------------pruebas
+//prbando mailer
+router.get('/prueba/mailer',userController.probandomailer)
+
+//probando multer
+router.post('/prueba/multer',upload.single('imagen'),userController.probandomulter)
 
 
 module.exports = router;

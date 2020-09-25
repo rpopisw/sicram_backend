@@ -3,7 +3,11 @@ require('../../config/userpassport')(passport);
 var express = require('express');
 var router = express.Router();
 var doctorController = require("../../controller/doctorController");
+var citaController = require('../../controller/citaController');
 const { route } = require('./indexusr');
+
+//para ingresar la imgane con multer
+const upload = require('../../libs/storage')
 
 router.get('/',function (req,res) {
   res.render("index",{title:"SICRAM"}); 
@@ -33,8 +37,16 @@ router.post('/doctor/horario/modificar/:id',passport.authenticate('doctor', { se
 router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { session: false}),doctorController.Eliminar_horario_doctor)
 
 //CITAS DEL DOCTOR
-//listar citas del doctor
+//listar citas pendientes
 router.get('/doctor/cita/listar/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Doctor)
+//listar citas atendidas
+router.get('/doctor/cita/listar_atendidas/:id',passport.authenticate('doctor', { session: false}),doctorController.Obtener_Citas_Atendidas_Doctor)
+//obtener detalles de una cita de un paciente
+router.get('/doctor/cita/detalle/:id',doctorController.Obtener_Detalles_De_Cita_De_Un_Paciente)
+//ingresar a la cita 
+router.post('/cita/ingresar',citaController.Ingresar_a_cita)
+
+
 //CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
 router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
 
@@ -42,12 +54,33 @@ router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session:
 //datos iniciales de la nueva receta
 router.get('/doctor/receta/datos/:id',passport.authenticate('doctor', { session: false}),doctorController.Enviar_Datos_Nueva_Receta)
 //crear nueva receta
-router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),doctorController.Crear_Nueva_Receta)
+router.post('/doctor/receta/crear/:id',passport.authenticate('doctor', { session: false}),upload.single('firma_imagen'),doctorController.Crear_Nueva_Receta)
+//ver receta que el medico receto a un paciente
+router.post('/doctor/receta/ver_receta/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_receta_doctor)
+
+//AGREGAR DIAGNOSTICO AL PACIENTE
+router.post('/doctor/cita/registrar_diagnostico/:id',passport.authenticate('doctor', { session: false}),citaController.Registrar_Diagnostico)
+
+// VER HISTORIAL DE DIAGNOSTICOS/HISTORIAL MEDICO DEL PACIENTE EN UNA CITA
+router.post('/doctor/cita/ver_historial_de_paciente/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_Historial_Paciente)
+
+
+// VER DIAGNOSTICO DE ALGUNA CITA PASADa
+router.post('/doctor/diagnostico/ver_diagnostico/:id',passport.authenticate('doctor', { session: false}),citaController.Ver_diagnostico_doctor)
 
 
 
+
+
+//PRUEBAS
 //para la prueba
 router.get('/doctor/listar',doctorController.listar)
+
+//probar meter medicamentos
+router.post('/doctor/receta/prueba/medicamento',doctorController.probandoMeterMedicamentos)
+
+//pruebas
+router.post('/doctor/cita/prueba/ingresar',citaController.Ingresar_a_cita)
 
 module.exports = router;
  

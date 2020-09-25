@@ -9,6 +9,7 @@ var Especialidad = require("../models/especialidad")
 var Horario = require("../models/horario")
 const loggerwin = require('../utils/logger_winston.js')
 const chalk = require("chalk");
+const mailer = require("../mail/mediador_mailer")
 
 const logger = console.log;
 
@@ -43,7 +44,16 @@ exports.SignupOrganizacion = async function (req, res) {
                especialidad:req.body.especialidad
             })
             newOrg.especialidad.push(especialidad)*/
-
+            mailer.notificarRegistro(`EXITO! en su registro de cuenta.\n\n
+            Reciba los cordiales saludos de la familia SICRAM\n
+            ORGANICACION ${newOrg.nameOrg} \n
+            Agradecemos su aporte en la familia SICRAM ahora podra registrar a sus doctores que ayuden a nuestros pacientes con sus consultas\n
+            Solo necesita ingresar a su cuenta y registre a los doctores que cuente su organizacion
+            recuerde que podra usted ver el trabajo de sus doctores.\n
+            \n
+            ORGANICACION ${newOrg.nameOrg}, tome en cuenta de darles las constraseñas y los correos de registro de sus doctores
+            con esto sus doctores podran ingresar para realizar las consultas a nuestros pacientes.\n\n\n
+            Muchas Gracias Atentamente SICRAM  `,newOrg)
             await newOrg.save(function (error, newOrga) {
               if (error) {
                 loggerwin.info("usuario ya existe");
@@ -152,7 +162,7 @@ exports.Actualizar_Datos_Organizacion = async function (req, res) {
         await Organizacion.findById(req.user.id, async (err, org) => {
           if (err) {
             logger(
-              chalk.blue("usuario no encontrado aqui el error: ") +
+              chalk.blue("Usuario no encontrado aqui el error: ") +
                 chalk.red(err)
             );
           } else {
@@ -251,6 +261,7 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
                     lastname: req.body.lastname,
                     dni: req.body.dni,
                     edad: req.body.edad,
+                    genero: req.body.genero,
                     celular: req.body.celular,
                     cmp: req.body.cmp,
                     profesion: req.body.profesion,
@@ -258,6 +269,24 @@ exports.Registrar_Doctor_En_Organization = async function (req, res) {
                   //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
                   newDoctor.especialidad = especialidad;
                   newDoctor.organizacion = organizacion;
+                  //enviando notificacion de registro de doctor por parte de una organizacion
+                  mailer.notificarRegistro(
+                    `EXITO! en su registro de cuenta.\n\n
+                    Usted es parte de la Organizacion: ${organizacion.nameOrg} y ahora es parte de SICRAM\n
+                    Reciba los cordiales saludos de la familia SICRAM\n
+                    DOCTOR SU CUENTA FUE CREADA CON EL SIGUIENTE CORREO:\n
+                    ${newDoctor.email}\n\n
+                    Porfavor su contraseña solicitele a su Organizacion ${organizacion.nameOrg}\n
+                    DOCTOR ${newDoctor.lastname}, ${newDoctor.name} \n
+                    Agradecemos su aporte en la familia SICRAM ahora podra ayudar a nuestros pacientes en sus consultas\n
+                    Solo necesita ingresar a su cuenta y agregue horarios de su disponibilidad
+                    con esto nuestros pacientes podran elegirlo para una consulta virtual.\n
+                    \n
+                    Doctor ${newDoctor.lastname}, recuerde que cuando un paciente registre una cita con usted
+                    automaticamente le llegara un correo de informacion de la cita, con sus detalles.\n\n\n
+                    Muchas Gracias Atentamente SICRAM  `,
+                    newDoctor
+                  );
                   // guardamos doctor registrado
                   await newDoctor.save(function (err) {
                     //error al guardar al doctor
@@ -530,6 +559,54 @@ exports.Eliminar_Doctor = async function (req, res) {
     logger(chalk.red("ERROR: ") + chalk.white(error));
   }
 }
+
+exports.Generar_Estadistica_Doctor = async function (req, res) {
+  try {
+    console.log(req.headers)
+    var token = getToken(req.headers);
+      if (token) {
+        //TODO
+      if (req.user.id == req.params.id) {
+        await Doctor.find({organizacion:req.user.id},(err,doctor)=>{
+          if (err){
+            //si hay un error en la busqueda
+            logger(chalk.red("ERR: ") + chalk.white(err));
+            res.status(401).json({ msg: "ERR: "+err });
+          }else{
+            //ahora enviamos el docotor
+            var estadistica = []
+            logger(chalk.blue("cantidad de doctores de la organizacion: ") + chalk.green(doctor.length));
+            doctor.forEach(doc => {
+              logger('nombre doctor: '+doc.username+'cantidad citas doctor:'+doc.cita.length)
+              estadistica.push({doctor:doc.username.toUpperCase()+' '+doc.lastname,cantidad_citas:doc.cita.length})
+              logger('ESTADISTICA:\n'+estadistica)
+            });
+            res.json(estadistica);
+          }
+        }).populate('especialidad')
+      } else {
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+      }
+      } else {
+        return res.status(403).send({ success: false, msg: "Unauthorized." });
+      }
+  }catch (e) {
+    loggerwin.info(e);
+    logger(chalk.red("ERR  ") + chalk.white(e));
+  }
+}
+
 
 //metodo para confirmar que entro un token
 getToken = function (headers) {

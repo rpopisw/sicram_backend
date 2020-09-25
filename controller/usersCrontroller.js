@@ -3,9 +3,19 @@ var config = require("../database/key");
 require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var User = require("../models/user");
+var Cita = require("../models/cita");
 const chalk = require("chalk");
-const loggerwin = require('../utils/logger_winston.js')
+const loggerwin = require("../utils/logger_winston.js");
 const logger = console.log;
+const mailer = require("../mail/mediador_mailer")
+const Doctor = require("../models/doctor")
+const Organizacion = require("../models/organizacion");
+
+
+
+//para agregar en cloudinary nuestras imagenes
+const cloudinary =require("../tools/cloudinary")
+const fs = require("fs")
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
@@ -25,12 +35,26 @@ exports.SignupUsuario = async function (req, res) {
             email: req.body.email,
             name: req.body.name,
             lastname: req.body.lastname,
+            genero: req.body.genero,
             dni: req.body.dni,
             edad: req.body.edad,
             discapacidad: req.body.discapacidad,
             celular: req.body.celular,
             direccion: req.body.direccion,
           });
+          
+          mailer.notificarRegistro(
+          `EXITO! en su registro de cuenta.\n\n
+          Reciba los cordiales saludos de la familia SICRAM\n
+          ${newUser.lastname}, ${newUser.name} ahora es un nuevo paciente que se le atendera agradablemente\n
+          Agradecemos su aporte en la familia SICRAM ahora podra hacer crear citas con nuestros doctores registrados y disponibles\n
+          Solo necesita ingresar a su cuenta y crear su cita con el doctor de su preferencia y en el horario de disponibilidad del doctor.\n
+          Recuerde ${newUser.lastname}, ${newUser.name} que si tiene un familiar que no puede usar el sistema virtual algun motivo\n
+          puede agregarlo como familiar a su cuenta y tambien podra sacar una cita para su familiar.\n
+          \n
+          ${newUser.lastname}, tome en cuenta que los doctores tendran horarios de disponibilidad, si su doctor no tiene un horario disponible.\n
+          le invitamos que busque a otro doctor que si tenga horario disponible\n
+          Muchas Gracias Atentamente SICRAM  `,newUser)
           // guardamos usuario registrado
           await newUser.save(function (err) {
             if (err) {
@@ -57,12 +81,10 @@ exports.SingninUsuario = function (req, res) {
       if (!user) {
         loggerwin.info("Autenticación de usuario fallida");
         logger(chalk.red("Autenticación de usuario fallida"));
-        res
-          .status(401)
-          .send({
-            success: false,
-            msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
-          });
+        res.status(401).send({
+          success: false,
+          msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
+        });
       } else {
         // check if password matches
         logger(chalk.blue("Contraseña: " + chalk.green(user.password)));
@@ -78,12 +100,10 @@ exports.SingninUsuario = function (req, res) {
             res.json({ success: true, id: user._id, token: "Bearer " + token });
           } else {
             loggerwin.info("LA AUTENTICACION FALLO PASSWORD INCORRECTO ");
-            res
-              .status(401)
-              .send({
-                success: false,
-                msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
-              });
+            res.status(401).send({
+              success: false,
+              msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
+            });
           }
         });
       }
@@ -186,6 +206,7 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
   }
 };
 
+
 //metodo para confirmar que entro un token
 getToken = function (headers) {
   if (headers && headers.authorization) {
@@ -200,3 +221,34 @@ getToken = function (headers) {
     return null;
   }
 };
+
+//probando el mailer
+exports.probandomailer = function (req, res) {
+  const paciente = new User({ name:'Juan',lastname:'Merino',email: 'miguel.ramirez7@unmsm.edu.pe' });
+  const doctor = new Doctor({ name: 'Cirilo',email: 'miguel.ramirez7@unmsm.edu.pe' })
+  const org = new Organizacion({ email: 'miguel.ramirez7@unmsm.edu.pe' })
+  console.log('email de paciente: ' + paciente.email)
+  mailer.notificarRegistro(`EXITO! ${paciente.name} ${paciente.lastname} USTED ES UN NUEVO PACIENTE `,paciente)
+  /*mailer.notificarActualizacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)
+  mailer.notificarEliminacionDeCita(`HOLA DOCTOR ${doctor.name} LA CITA X HA SIDO ACTUALIZADA`,doctor)*/
+
+  res.json({msg:'prueba'})
+
+}
+
+//probando multeral
+exports.probandomulter = async function (req, res) {
+    const uploader = async (path)=> await cloudinary.uploads(path,'Images')
+    console.log(req.file)
+    const file = req.file
+    const path = file.path
+  
+    const newUrl = await uploader(path)
+    fs.unlinkSync(path)
+    
+    const receta = new Receta({
+      firma:newUrl.url,
+    })
+    
+    res.json(receta)
+}

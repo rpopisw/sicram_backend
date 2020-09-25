@@ -21,6 +21,7 @@ exports.Agregar_Dependiente = async function (req, res) {
           name: req.body.name,
           lastname: req.body.lastname,
           email: req.body.email,
+          genero: req.body.genero,
           dni: req.body.dni,
           edad: req.body.edad,
           discapacidad: req.body.discapacidad,
@@ -133,8 +134,8 @@ exports.Obtener_Dependientes = async function (req, res) {
           chalk.blue("Obtener dependiente :  ") + chalk.green(req.user.id)
         );
         await Dependiente.find({ user: req.user.id }, (err, dependientes) => {
-          if (err) {
-            res.json({ msg: "no encontro las dependientes" });
+          if (!dependientes) {
+            res.json({ msg: "No se encontro los dependientes" });
           } else {
             res.status(200).json(dependientes);
           }
@@ -170,8 +171,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
       await Dependiente.findOne(
         { _id: req.params.id },
         async (err, dependiente) => {
-          if (err) {
-            res.json({ msg: "no encontro las dependientes" });
+          if (!dependiente) {
+            res.json({ msg: "No se encontró los dependientes" });
           } else {
             logger(chalk.blue("Obteniendo del body: ") + chalk.green(req.body));
             //creando nueva cita

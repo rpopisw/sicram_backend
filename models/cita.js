@@ -1,3 +1,4 @@
+const { json } = require('body-parser');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -28,6 +29,15 @@ var CitaSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Receta'
     },
+    detalle_sintomas:{
+        sintoma: String,
+        tratamiento_reciente:{type: Boolean , default: false},
+        alergia:{type: Boolean, default: false}
+    },
+    diagnostico:{
+        type: Schema.Types.ObjectId,
+        ref: 'Diagnostico',
+    },
     aulaVirtual:{
         sessionId:{
             type: String,
@@ -38,6 +48,5 @@ var CitaSchema = new Schema({
     }
 });
 
-CitaSchema.methods.crearCita = function(){};
 
 module.exports = mongoose.model('Cita',CitaSchema);

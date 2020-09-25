@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
+const mailer = require('../mail/mailer')
 
 var OrganizacionSchema = new Schema({
   ruc:{
@@ -58,6 +59,8 @@ OrganizacionSchema.pre('save', function (next) {
     }
 });
 
+
+
 OrganizacionSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
@@ -68,7 +71,32 @@ OrganizacionSchema.methods.comparePassword = function (passw, cb) {
     });
 };
 
+OrganizacionSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+};
+
 OrganizacionSchema.pre('deleteOne', function (next){
     console.log('antes de eliminar organizacion eliminamos referencias')
 })
+
+OrganizacionSchema.methods.recibirMensaje =  function(msg,asunto){
+    console.log("ORGANIZACION RECIBIENDO:"+msg)
+
+    //-----------------------
+    const email_options = {
+        from: 'sicram.empresa@gmail.com',
+        to: this.email,
+        subject: asunto,
+        text: msg
+    }
+    
+    mailer.sendMail(email_options,function(err){
+        if(err){ return console.log(err.message)}
+        console.log('Se ha enviado un mail a: '+this.email+'.')
+    })
+}
 module.exports = mongoose.model('Organizacion', OrganizacionSchema);

@@ -15,7 +15,11 @@ var chalk = require('chalk')
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-console.log(chalk.yellow("servidor local: ")+ chalk.bold("http://localhost:3000/api"))
+
+
+  console.log(chalk.yellow("servidor local: ")+ chalk.bold("http://localhost:3000/api"))
+
+
 /**
  * Create HTTP server.
  */

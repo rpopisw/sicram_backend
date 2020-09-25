@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 var User = require('./user')
+const mailer = require('../mail/mailer')
+
 
 var DoctorSchema = new Schema({
   username: {
@@ -35,6 +37,9 @@ var DoctorSchema = new Schema({
         type: Number,
         required: true,
   },
+  genero: {
+    type:String,
+    },
   celular: {
         type: Number,
         required: true,
@@ -89,7 +94,6 @@ DoctorSchema.pre('save', function (next) {
  })
 
 DoctorSchema.pre('deleteOne', function (next) {
-    console.log('NO LO HACE')
     return next();
 })
 
@@ -102,6 +106,14 @@ DoctorSchema.methods.mensaje=(msg)=>{
     console.log(msg);
 }
 
+DoctorSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+}
+
 DoctorSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
@@ -111,5 +123,21 @@ DoctorSchema.methods.comparePassword = function (passw, cb) {
         cb(null, isMatch);
     });
 };
+
+DoctorSchema.methods.recibirMensaje =  function(msg,asunto){
+    console.log("DOCTOR RECIBIENDO:"+msg)
+    //------------------------------------------------
+    const email_options = {
+        from: 'sicram.empresa@gmail.com',
+        to: this.email,
+        subject: asunto,
+        text: msg
+    }
+    
+    mailer.sendMail(email_options,function(err){
+        if(err){ return console.log(err.message)}
+        console.log('Se ha enviado un mail a: '+this.email+'.')
+    })
+}
 
 module.exports = mongoose.model('Doctor', DoctorSchema);
